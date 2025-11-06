@@ -9,6 +9,9 @@ from app.core.config import settings
 from app.core.database import engine
 from app.core.logging import setup_logging
 from app.core.routes.health import router as health_router
+from app.core.routes.status import router as status_router
+from app.core.scheduler import scheduler_manager
+from app.core.job_manager import job_manager
 
 
 @asynccontextmanager
@@ -16,8 +19,11 @@ async def lifespan(app: FastAPI):
     """Application lifespan events."""
     # Startup
     setup_logging()
+    await scheduler_manager.start()
+    await job_manager.register_all_jobs()
     yield
     # Shutdown
+    await scheduler_manager.shutdown()
     await engine.dispose()
 
 
@@ -40,3 +46,4 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health_router)
+app.include_router(status_router)
