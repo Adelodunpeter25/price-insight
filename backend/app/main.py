@@ -10,6 +10,7 @@ from app.core.database import engine
 from app.core.job_manager import job_manager
 from app.core.logging import setup_logging
 from app.core.routes.health import router as health_router
+from app.core.routes.monitoring import router as monitoring_router
 from app.core.routes.status import router as status_router
 from app.core.scheduler import scheduler_manager
 from app.ecommerce.routes.deals import router as deals_router
@@ -49,5 +50,6 @@ app.add_middleware(
 # Include routers
 app.include_router(health_router)
 app.include_router(status_router)
+app.include_router(monitoring_router)
 app.include_router(products_router)
 app.include_router(deals_router)
