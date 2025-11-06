@@ -3,11 +3,12 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.core.deps import get_database_session
+from app.utils.pagination import PaginationParams, paginate_joined_query
 from app.core.models.alert import AlertHistory, AlertRule
 from app.ecommerce.models import Deal, Product
 from app.ecommerce.schemas.deal import (
@@ -49,40 +50,25 @@ async def list_deals(
     if min_discount:
         query = query.where(Deal.discount_percent >= min_discount)
     
-    # Get total count
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    # Order by creation date
+    query = query.order_by(Deal.created_at.desc())
     
-    # Apply pagination
-    offset = (page - 1) * size
-    query = query.offset(offset).limit(size).order_by(Deal.created_at.desc())
-    
-    # Execute query
-    result = await db.execute(query)
-    deals_data = result.all()
-    
-    # Format response
-    deals = []
-    for deal, product_name, product_url, product_site in deals_data:
+    # Format function for joined query results
+    def format_deal(row):
+        deal, product_name, product_url, product_site = row
         deal_dict = DealResponse.model_validate(deal).model_dump()
         deal_dict.update({
             "product_name": product_name,
             "product_url": product_url,
             "product_site": product_site
         })
-        deals.append(DealWithProductResponse(**deal_dict))
+        return DealWithProductResponse(**deal_dict)
     
-    # Calculate pagination info
-    pages = (total + size - 1) // size
+    # Use pagination utility
+    pagination = PaginationParams(page=page, size=size)
+    result = await paginate_joined_query(db, query, pagination, format_deal)
     
-    return DealListResponse(
-        items=deals,
-        total=total,
-        page=page,
-        size=size,
-        pages=pages
-    )
+    return DealListResponse(**result.model_dump())
 
 
 @router.get("/deals/{deal_id}", response_model=DealResponse)
@@ -125,39 +111,24 @@ async def list_alerts(
     if rule_type:
         query = query.where(AlertRule.rule_type == rule_type)
     
-    # Get total count
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    # Order by creation date
+    query = query.order_by(AlertHistory.created_at.desc())
     
-    # Apply pagination
-    offset = (page - 1) * size
-    query = query.offset(offset).limit(size).order_by(AlertHistory.created_at.desc())
-    
-    # Execute query
-    result = await db.execute(query)
-    alerts_data = result.all()
-    
-    # Format response
-    alerts = []
-    for alert, product_name, rule_type in alerts_data:
+    # Format function for joined query results
+    def format_alert(row):
+        alert, product_name, rule_type = row
         alert_dict = AlertHistoryResponse.model_validate(alert).model_dump()
         alert_dict.update({
             "product_name": product_name,
             "rule_type": rule_type
         })
-        alerts.append(AlertHistoryWithDetailsResponse(**alert_dict))
+        return AlertHistoryWithDetailsResponse(**alert_dict)
     
-    # Calculate pagination info
-    pages = (total + size - 1) // size
+    # Use pagination utility
+    pagination = PaginationParams(page=page, size=size)
+    result = await paginate_joined_query(db, query, pagination, format_alert)
     
-    return AlertListResponse(
-        items=alerts,
-        total=total,
-        page=page,
-        size=size,
-        pages=pages
-    )
+    return AlertListResponse(**result.model_dump())
 
 
 @router.post("/alerts/rules", response_model=AlertRuleResponse, status_code=201)

@@ -3,7 +3,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -17,6 +17,7 @@ from app.ecommerce.schemas.product import (
     ProductUpdate,
 )
 from app.ecommerce.services.product_service import ProductService
+from app.utils.pagination import PaginationParams, paginate_query
 
 router = APIRouter(prefix="/api/products", tags=["Products"])
 
@@ -64,29 +65,14 @@ async def list_products(
     if is_tracked is not None:
         query = query.where(Product.is_tracked == is_tracked)
     
-    # Get total count
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    # Order by creation date
+    query = query.order_by(Product.created_at.desc())
     
-    # Apply pagination
-    offset = (page - 1) * size
-    query = query.offset(offset).limit(size).order_by(Product.created_at.desc())
+    # Use pagination utility
+    pagination = PaginationParams(page=page, size=size)
+    result = await paginate_query(db, query, pagination, ProductResponse)
     
-    # Execute query
-    result = await db.execute(query)
-    products = list(result.scalars().all())
-    
-    # Calculate pagination info
-    pages = (total + size - 1) // size
-    
-    return ProductListResponse(
-        items=[ProductResponse.model_validate(p) for p in products],
-        total=total,
-        page=page,
-        size=size,
-        pages=pages
-    )
+    return ProductListResponse(**result.model_dump())
 
 
 @router.get("/{product_id}", response_model=ProductDetailResponse)
