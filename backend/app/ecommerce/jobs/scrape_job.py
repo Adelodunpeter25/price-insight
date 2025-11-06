@@ -71,7 +71,8 @@ async def scrape_tracked_products():
                             continue
 
             logger.info(
-                f"Scraping job completed: {total_scraped} products scraped, {total_deals} alerts triggered"
+                f"Scraping job completed: {total_scraped} products scraped, "
+                f"{total_deals} alerts triggered"
             )
 
         except Exception as e:

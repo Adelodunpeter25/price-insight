@@ -52,4 +52,7 @@ class AlertHistory(BaseModel):
 
     def __repr__(self) -> str:
         """String representation."""
-        return f"<AlertHistory(id={self.id}, rule_id={self.alert_rule_id}, sent={self.notification_sent})>"
+        return (
+            f"<AlertHistory(id={self.id}, rule_id={self.alert_rule_id}, "
+            f"sent={self.notification_sent})>"
+        )
