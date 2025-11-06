@@ -165,6 +165,7 @@ temp/
 
 # Docs
 .amazonq
+backend/implementation.md
 
 # Alembic
 alembic.ini
