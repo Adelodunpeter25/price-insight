@@ -1,7 +1,6 @@
 """Base database model."""
 
 from datetime import datetime
-from typing import Any
 
 from sqlalchemy import Boolean, DateTime, Integer, func
 from sqlalchemy.ext.declarative import declared_attr

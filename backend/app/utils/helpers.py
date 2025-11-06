@@ -5,7 +5,6 @@ from decimal import Decimal
 from typing import Optional
 from urllib.parse import urlparse
 
-from pydantic import HttpUrl
 
 
 def validate_url(url: str) -> bool:

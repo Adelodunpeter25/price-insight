@@ -5,13 +5,12 @@ from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
-from app.core.config import settings
 
 
 class SchedulerManager:
     """Manages APScheduler instance and job lifecycle."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize scheduler with configuration."""
         jobstores = {"default": MemoryJobStore()}
 
@@ -25,14 +24,14 @@ class SchedulerManager:
 
         self._is_running = False
 
-    async def start(self):
+    async def start(self) -> None:
         """Start the scheduler."""
         if not self._is_running:
             self.scheduler.start()
             self._is_running = True
             logger.info("Scheduler started successfully")
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """Shutdown the scheduler gracefully."""
         if self._is_running:
             self.scheduler.shutdown(wait=True)

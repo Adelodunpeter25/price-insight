@@ -1,6 +1,5 @@
 """Generic e-commerce scraper with configurable selectors."""
 
-from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
 from loguru import logger

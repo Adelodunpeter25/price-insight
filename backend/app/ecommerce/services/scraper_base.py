@@ -3,7 +3,6 @@
 import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
-from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup

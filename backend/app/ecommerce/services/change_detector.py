@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.alerts.rules_engine import AlertRulesEngine
 from app.core.models.alert import AlertHistory
 from app.core.notifications.service import notification_service
-from app.ecommerce.models import PriceHistory, Product
+from app.ecommerce.models import Product
 from app.ecommerce.services.product_service import ProductService
 
 

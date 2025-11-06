@@ -1,10 +1,8 @@
 """Scraping job for tracking product prices."""
 
-from decimal import Decimal
 from typing import Dict, List
 
 from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import AsyncSessionLocal
 from app.ecommerce.models import Product

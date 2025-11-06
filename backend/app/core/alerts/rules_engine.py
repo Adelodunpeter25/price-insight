@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models.alert import AlertHistory, AlertRule
-from app.ecommerce.models import PriceHistory, Product
+from app.ecommerce.models import PriceHistory
 from app.utils.helpers import calculate_discount_percentage
 
 
@@ -26,7 +26,7 @@ class AlertRulesEngine:
 
         # Get all active alert rules for this product
         stmt = select(AlertRule).where(
-            AlertRule.product_id == product_id, AlertRule.is_active == True
+            AlertRule.product_id == product_id, AlertRule.is_active
         )
         result = await self.db.execute(stmt)
         alert_rules = list(result.scalars().all())

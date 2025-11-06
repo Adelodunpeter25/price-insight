@@ -1,13 +1,13 @@
 """Pagination utilities for API endpoints."""
 
 from math import ceil
-from typing import Any, List, TypeVar
+from typing import Any, Callable, List, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 
 
 class PaginationParams(BaseModel):
@@ -40,7 +40,7 @@ async def paginate_query(
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
     total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    total = total_result.scalar() or 0
 
     # Apply pagination to query
     paginated_query = query.offset(pagination.offset).limit(pagination.size)
@@ -61,14 +61,14 @@ async def paginate_query(
 
 
 async def paginate_joined_query(
-    db: AsyncSession, query: Any, pagination: PaginationParams, formatter_func: callable
+    db: AsyncSession, query: Any, pagination: PaginationParams, formatter_func: Callable[[Any], Any]
 ) -> PaginatedResponse:
     """Paginate a joined query with custom formatting function."""
 
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
     total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    total = total_result.scalar() or 0
 
     # Apply pagination to query
     paginated_query = query.offset(pagination.offset).limit(pagination.size)

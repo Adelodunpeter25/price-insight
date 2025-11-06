@@ -55,7 +55,7 @@ async def list_products(
     """List tracked products with pagination and filters."""
 
     # Build query with filters
-    query = select(Product).where(Product.is_active == True)
+    query = select(Product).where(Product.is_active)
 
     if site:
         query = query.where(Product.site.ilike(f"%{site}%"))
@@ -81,7 +81,7 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_database_s
     query = (
         select(Product)
         .options(selectinload(Product.price_history))
-        .where(Product.id == product_id, Product.is_active == True)
+        .where(Product.id == product_id, Product.is_active)
     )
 
     result = await db.execute(query)
@@ -100,7 +100,7 @@ async def update_product(
     """Update product information."""
 
     # Get product
-    query = select(Product).where(Product.id == product_id, Product.is_active == True)
+    query = select(Product).where(Product.id == product_id, Product.is_active)
     result = await db.execute(query)
     product = result.scalar_one_or_none()
 
@@ -123,7 +123,7 @@ async def delete_product(product_id: int, db: AsyncSession = Depends(get_databas
     """Stop tracking a product (soft delete)."""
 
     # Get product
-    query = select(Product).where(Product.id == product_id, Product.is_active == True)
+    query = select(Product).where(Product.id == product_id, Product.is_active)
     result = await db.execute(query)
     product = result.scalar_one_or_none()
 
