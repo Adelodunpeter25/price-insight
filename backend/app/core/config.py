@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379"
     
-    # API settings
-    api_v1_prefix: str = "/api/v1"
-    
     class Config:
         env_file = ".env"
 
