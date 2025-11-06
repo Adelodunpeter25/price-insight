@@ -19,7 +19,7 @@ from .product import (
 
 __all__ = [
     "ProductCreate",
-    "ProductUpdate", 
+    "ProductUpdate",
     "ProductResponse",
     "ProductDetailResponse",
     "ProductListResponse",

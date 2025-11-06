@@ -19,7 +19,7 @@ async def health_check(db: AsyncSession = Depends(get_database_session)):
         db_status = "healthy"
     except Exception:
         db_status = "unhealthy"
-    
+
     return HealthResponse(
         status="healthy" if db_status == "healthy" else "unhealthy",
         version=settings.version,

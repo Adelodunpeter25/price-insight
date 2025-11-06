@@ -33,8 +33,8 @@ def calculate_discount_percentage(original_price: Decimal, current_price: Decima
 def extract_price_from_text(text: str) -> Optional[Decimal]:
     """Extract price from text using regex."""
     # Match patterns like $19.99, £25.50, €30.00
-    pattern = r'[£$€]?(\d+(?:,\d{3})*(?:\.\d{2})?)'
-    match = re.search(pattern, text.replace(',', ''))
+    pattern = r"[£$€]?(\d+(?:,\d{3})*(?:\.\d{2})?)"
+    match = re.search(pattern, text.replace(",", ""))
     if match:
         return Decimal(match.group(1))
     return None

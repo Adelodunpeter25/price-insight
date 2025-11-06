@@ -1,6 +1,7 @@
 """Test configuration and base test class."""
 
 import unittest
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -34,12 +35,12 @@ app.dependency_overrides[get_db] = override_get_db
 
 class BaseTestCase(unittest.TestCase):
     """Base test case with common setup."""
-    
+
     def setUp(self):
         """Set up test client and database session."""
         self.client = TestClient(app)
         self.db = TestingSessionLocal()
-    
+
     def tearDown(self):
         """Clean up after test."""
         self.db.close()
