@@ -20,6 +20,7 @@ class Product(BaseModel):
     # Relationships
     price_history = relationship("PriceHistory", back_populates="product")
     deals = relationship("Deal", back_populates="product")
+    alert_rules = relationship("AlertRule", back_populates="product")
     
     def __repr__(self) -> str:
         """String representation."""

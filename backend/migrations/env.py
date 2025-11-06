@@ -12,6 +12,7 @@ from alembic import context
 # Import your models here for autogenerate support
 from app.core.models.base import Base
 from app.ecommerce.models import Product, PriceHistory, Deal
+from app.core.models.alert import AlertRule, AlertHistory
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

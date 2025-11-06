@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal
 from app.ecommerce.models import Product
 from app.ecommerce.services.product_service import ProductService
+from app.ecommerce.services.change_detector import ChangeDetector
 from app.ecommerce.services.scrapers.amazon import AmazonScraper
 from app.ecommerce.services.scrapers.generic import GenericScraper, COMMON_SELECTORS
 
@@ -20,6 +21,7 @@ async def scrape_tracked_products():
     async with AsyncSessionLocal() as db:
         try:
             product_service = ProductService(db)
+            change_detector = ChangeDetector(db)
             products = await product_service.get_products_to_track()
             
             if not products:
@@ -47,23 +49,17 @@ async def scrape_tracked_products():
                             data = await scraper.scrape(product.url)
                             
                             if data and 'price' in data:
-                                # Add price history
-                                await product_service.add_price_history(
+                                # Process price change and trigger alerts
+                                alerts = await change_detector.process_price_change(
                                     product.id,
                                     data['price'],
                                     data.get('currency', 'USD'),
                                     data.get('availability')
                                 )
                                 
-                                # Check for deals
-                                deal = await product_service.check_for_deal(
-                                    product.id,
-                                    data['price']
-                                )
-                                
-                                if deal:
-                                    total_deals += 1
-                                    logger.info(f"Deal found for {product.name}: {deal.discount_percent}% off")
+                                if alerts:
+                                    total_deals += len(alerts)
+                                    logger.info(f"Triggered {len(alerts)} alerts for {product.name}")
                                 
                                 total_scraped += 1
                                 
@@ -74,7 +70,7 @@ async def scrape_tracked_products():
                             logger.error(f"Error scraping product {product.id}: {e}")
                             continue
             
-            logger.info(f"Scraping job completed: {total_scraped} products scraped, {total_deals} deals found")
+            logger.info(f"Scraping job completed: {total_scraped} products scraped, {total_deals} alerts triggered")
             
         except Exception as e:
             logger.error(f"Scraping job failed: {e}")
