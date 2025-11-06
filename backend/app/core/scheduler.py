@@ -6,7 +6,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
 
-
 class SchedulerManager:
     """Manages APScheduler instance and job lifecycle."""
 

@@ -132,9 +132,7 @@ async def create_alert_rule(
     """Create a new alert rule."""
 
     # Validate product exists
-    product_query = select(Product).where(
-        Product.id == rule_data.product_id, Product.is_active
-    )
+    product_query = select(Product).where(Product.id == rule_data.product_id, Product.is_active)
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 

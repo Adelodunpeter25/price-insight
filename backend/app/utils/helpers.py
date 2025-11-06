@@ -6,7 +6,6 @@ from typing import Optional
 from urllib.parse import urlparse
 
 
-
 def validate_url(url: str) -> bool:
     """Validate if URL is properly formatted."""
     try:
