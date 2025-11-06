@@ -10,7 +10,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 # Import your models here for autogenerate support
-from app.core.database import Base
+from app.core.models.base import Base
+from app.ecommerce.models import Product, PriceHistory, Deal
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
