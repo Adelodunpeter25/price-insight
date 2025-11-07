@@ -1,12 +1,16 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
+  disabled?: boolean;
   children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export const Button = ({
@@ -16,7 +20,8 @@ export const Button = ({
   disabled,
   children,
   className = '',
-  ...props
+  onClick,
+  type = 'button'
 }: ButtonProps) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black';
   
@@ -39,7 +44,8 @@ export const Button = ({
       whileTap={{ scale: 0.98 }}
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
       disabled={disabled || loading}
-      {...props}
+      onClick={onClick}
+      type={type}
     >
       {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
       {children}
