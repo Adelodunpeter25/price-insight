@@ -165,3 +165,4 @@ export const Signup = () => {
     </AuthLayout>
   );
 };
+};
