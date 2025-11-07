@@ -7,7 +7,7 @@ from .property import Property
 
 __all__ = [
     "Property",
-    "PropertyPriceHistory", 
+    "PropertyPriceHistory",
     "PropertyDeal",
     "PropertyAlertRule",
     "PropertyAlertHistory",

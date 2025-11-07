@@ -1,7 +1,5 @@
 """Property alert models."""
 
-from decimal import Decimal
-
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, Text
 
 from app.core.models.base import BaseModel

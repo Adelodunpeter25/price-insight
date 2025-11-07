@@ -33,9 +33,9 @@ class PropertyService:
         features: Optional[List[str]] = None,
     ) -> Property:
         """Get existing property or create new one."""
-        
+
         # Check if property exists
-        query = select(Property).where(Property.url == url, Property.is_active == True)
+        query = select(Property).where(Property.url == url, Property.is_active)
         result = await self.db.execute(query)
         existing_property = result.scalar_one_or_none()
 
@@ -79,7 +79,7 @@ class PropertyService:
         listing_status: Optional[str] = None,
     ) -> PropertyPriceHistory:
         """Add price history entry."""
-        
+
         price_history = PropertyPriceHistory(
             property_id=property_id,
             price=price,
@@ -89,12 +89,12 @@ class PropertyService:
         )
 
         self.db.add(price_history)
-        
+
         # Update current price in property
         query = select(Property).where(Property.id == property_id)
         result = await self.db.execute(query)
         property_obj = result.scalar_one_or_none()
-        
+
         if property_obj:
             property_obj.price = price
             property_obj.currency = currency
@@ -103,42 +103,39 @@ class PropertyService:
 
         await self.db.commit()
         await self.db.refresh(price_history)
-        
+
         logger.info(f"Added price history for property {property_id}: ₦{price}")
         return price_history
 
     async def get_latest_price(self, property_id: int) -> Optional[PropertyPriceHistory]:
         """Get latest price history entry."""
-        
+
         query = (
             select(PropertyPriceHistory)
             .where(PropertyPriceHistory.property_id == property_id)
             .order_by(PropertyPriceHistory.created_at.desc())
             .limit(1)
         )
-        
+
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_properties_to_track(self) -> List[Property]:
         """Get all properties that should be tracked."""
-        
-        query = select(Property).where(
-            Property.is_tracked == 1,
-            Property.is_active == True
-        )
-        
+
+        query = select(Property).where(Property.is_tracked == 1, Property.is_active)
+
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
     async def get_property_with_history(self, property_id: int) -> Optional[Property]:
         """Get property with price history."""
-        
+
         query = (
             select(Property)
             .options(selectinload(Property.price_history))
-            .where(Property.id == property_id, Property.is_active == True)
+            .where(Property.id == property_id, Property.is_active)
         )
-        
+
         result = await self.db.execute(query)
         return result.scalar_one_or_none()

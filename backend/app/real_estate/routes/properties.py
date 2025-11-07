@@ -5,7 +5,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.core.deps import get_current_user, get_database_session
 from app.core.models.user import User
@@ -65,8 +64,8 @@ async def list_properties(
     current_user: User = Depends(get_current_user),
 ):
     """List tracked properties with pagination and filters."""
-    
-    query = select(Property).where(Property.is_active == True)
+
+    query = select(Property).where(Property.is_active)
 
     if property_type:
         query = query.where(Property.property_type.ilike(f"%{property_type}%"))
@@ -96,7 +95,7 @@ async def get_property(
     current_user: User = Depends(get_current_user),
 ):
     """Get property details with price history."""
-    
+
     property_service = PropertyService(db)
     property_obj = await property_service.get_property_with_history(property_id)
 
@@ -114,8 +113,8 @@ async def update_property(
     current_user: User = Depends(get_current_user),
 ):
     """Update property information."""
-    
-    query = select(Property).where(Property.id == property_id, Property.is_active == True)
+
+    query = select(Property).where(Property.id == property_id, Property.is_active)
     result = await db.execute(query)
     property_obj = result.scalar_one_or_none()
 
@@ -140,8 +139,8 @@ async def delete_property(
     current_user: User = Depends(get_current_user),
 ):
     """Stop tracking property (soft delete)."""
-    
-    query = select(Property).where(Property.id == property_id, Property.is_active == True)
+
+    query = select(Property).where(Property.id == property_id, Property.is_active)
     result = await db.execute(query)
     property_obj = result.scalar_one_or_none()
 

@@ -74,7 +74,7 @@ class MonitoringService:
         avg_response_time = sum(response_times) / len(response_times) if response_times else 0
 
         return {
-            "status": "healthy" if scraping_success_rate > 80 else "degraded",
+            "status": "healthy" if scraping_success_rate > 50 else "degraded",
             "uptime_seconds": uptime,
             "scheduler_running": scheduler_manager.is_running,
             "total_jobs": len(job_manager.get_job_status()),

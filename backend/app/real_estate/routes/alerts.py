@@ -1,6 +1,6 @@
 """Property alert API endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,7 +24,7 @@ async def create_alert_rule(
     current_user: User = Depends(get_current_user),
 ):
     """Create property alert rule."""
-    
+
     alert_rule = PropertyAlertRule(
         property_id=alert_data.property_id,
         location=alert_data.location,
@@ -52,8 +52,8 @@ async def list_alerts(
     current_user: User = Depends(get_current_user),
 ):
     """List property alerts."""
-    
-    query = select(PropertyAlertRule).where(PropertyAlertRule.is_active == True)
+
+    query = select(PropertyAlertRule).where(PropertyAlertRule.is_active)
     query = query.order_by(PropertyAlertRule.created_at.desc())
 
     pagination = PaginationParams(page=page, size=size)

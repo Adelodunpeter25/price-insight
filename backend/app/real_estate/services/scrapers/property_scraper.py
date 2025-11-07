@@ -21,27 +21,36 @@ class PropertyScraper(BaseScraper):
         try:
             # Generic selectors for property sites
             name_selectors = [
-                "h1", ".property-title", ".listing-title", ".title",
-                "[data-testid='property-title']", ".property-name"
+                "h1",
+                ".property-title",
+                ".listing-title",
+                ".title",
+                "[data-testid='property-title']",
+                ".property-name",
             ]
-            
+
             price_selectors = [
-                ".price", ".cost", ".amount", "[data-price]",
-                ".property-price", ".listing-price", ".rent-price"
+                ".price",
+                ".cost",
+                ".amount",
+                "[data-price]",
+                ".property-price",
+                ".listing-price",
+                ".rent-price",
             ]
-            
+
             location_selectors = [
-                ".location", ".address", ".area", "[data-location]",
-                ".property-location", ".listing-location"
+                ".location",
+                ".address",
+                ".area",
+                "[data-location]",
+                ".property-location",
+                ".listing-location",
             ]
-            
-            bedrooms_selectors = [
-                ".bedrooms", ".beds", "[data-bedrooms]", ".bed-count"
-            ]
-            
-            bathrooms_selectors = [
-                ".bathrooms", ".baths", "[data-bathrooms]", ".bath-count"
-            ]
+
+            bedrooms_selectors = [".bedrooms", ".beds", "[data-bedrooms]", ".bed-count"]
+
+            bathrooms_selectors = [".bathrooms", ".baths", "[data-bathrooms]", ".bath-count"]
 
             # Extract data
             name = self._extract_text(soup, name_selectors)
@@ -64,7 +73,7 @@ class PropertyScraper(BaseScraper):
 
             # Determine property type from name/description
             property_type = self._determine_property_type(name.lower())
-            
+
             # Determine listing type
             listing_type = self._determine_listing_type(price_text.lower())
 
@@ -98,24 +107,26 @@ class PropertyScraper(BaseScraper):
     def _parse_price(self, text: str) -> Optional[Decimal]:
         """Parse price from text."""
         import re
+
         # Remove common words and extract numbers
         text = text.replace(",", "").replace(" ", "")
         price_match = re.search(r"[\d,]+\.?\d*", text)
         if price_match:
             try:
                 return Decimal(price_match.group())
-            except:
+            except (ValueError, TypeError):
                 pass
         return None
 
     def _parse_number(self, text: str) -> Optional[int]:
         """Parse number from text."""
         import re
+
         number_match = re.search(r"\d+", text)
         if number_match:
             try:
                 return int(number_match.group())
-            except:
+            except (ValueError, TypeError):
                 pass
         return None
 

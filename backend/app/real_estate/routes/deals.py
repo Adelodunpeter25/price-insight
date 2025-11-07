@@ -27,8 +27,8 @@ async def list_deals(
     current_user: User = Depends(get_current_user),
 ):
     """List active property deals."""
-    
-    query = select(PropertyDeal).where(PropertyDeal.is_active == True)
+
+    query = select(PropertyDeal).where(PropertyDeal.is_active)
 
     if deal_type:
         query = query.where(PropertyDeal.deal_type == deal_type)
@@ -48,11 +48,8 @@ async def get_deal(
     current_user: User = Depends(get_current_user),
 ):
     """Get deal details."""
-    
-    query = select(PropertyDeal).where(
-        PropertyDeal.id == deal_id, 
-        PropertyDeal.is_active == True
-    )
+
+    query = select(PropertyDeal).where(PropertyDeal.id == deal_id, PropertyDeal.is_active)
     result = await db.execute(query)
     deal = result.scalar_one_or_none()
 

@@ -1,8 +1,5 @@
 """Property model for real estate listings."""
 
-from decimal import Decimal
-from typing import List
-
 from sqlalchemy import Column, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 
