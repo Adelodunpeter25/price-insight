@@ -42,7 +42,7 @@ export function PublicFooter() {
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400">
-            © 2024 Price Insight. All rights reserved.
+            © 2025 Price Insight. All rights reserved.
           </p>
         </div>
       </div>

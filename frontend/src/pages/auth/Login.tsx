@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, } from 'lucide-react';
+import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { AuthLayout } from '../../components/layout/AuthLayout';
@@ -30,7 +30,14 @@ export const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-8 max-w-md mx-auto">
+      <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-8 max-w-md mx-auto relative">
+        <Link
+          to="/"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-sm"
+        >
+          <ArrowLeft size={16} />
+          Home
+        </Link>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
