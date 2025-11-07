@@ -1,6 +1,6 @@
-# Price Insight Platform
+# Price Insight API
 
-Multi-category deal aggregation platform that tracks prices across e-commerce, travel, real estate, and utilities.
+REST API for multi-category deal aggregation that tracks prices across e-commerce, travel, real estate, and utilities.
 
 ## Features
 
@@ -8,14 +8,14 @@ Multi-category deal aggregation platform that tracks prices across e-commerce, t
 - **Price Alerts**: Email notifications for price drops and deals
 - **User Authentication**: JWT-based auth with welcome emails
 - **Export Reports**: PDF/CSV exports for all categories
-- **Currency Normalization**: All prices in Nigerian Naira
+- **Currency Normalization**: All prices converted to Nigerian Naira
 - **Automated Scraping**: Scheduled price monitoring
 
 ## Quick Start
 
 ```bash
 # Clone and setup
-git clone <repo-url>
+git clone https://github.com/Adelodunpeter25/price-insight.git
 cd price-insight/backend
 
 # Install dependencies
