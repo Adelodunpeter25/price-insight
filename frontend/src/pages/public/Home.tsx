@@ -9,7 +9,7 @@ import {
   Globe,
   DollarSign
 } from 'lucide-react';
-import { PublicHeader } from '../components/layout';
+import { PublicHeader } from '../../components/layout';
 
 const features = [
   {
