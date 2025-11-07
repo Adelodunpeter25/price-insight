@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
@@ -13,6 +13,7 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthContext();
+  const navigate = useNavigate();
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,6 +22,7 @@ export const Login = () => {
 
     try {
       await login({ email, password });
+      navigate('/dashboard');
     } catch (err: any) {
       let errorMessage = 'Login failed. Please try again.';
       

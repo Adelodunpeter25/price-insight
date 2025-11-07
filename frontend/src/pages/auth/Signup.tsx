@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
@@ -17,6 +17,7 @@ export const Signup = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { signup } = useAuthContext();
+  const navigate = useNavigate();
 
 
   const validateForm = () => {
@@ -41,6 +42,7 @@ export const Signup = () => {
     try {
       await signup({ email, password, full_name: fullName || undefined });
       toast.success('Account created successfully!');
+      navigate('/dashboard');
     } catch (err: any) {
       let errorMessage = 'Signup failed. Please try again.';
       
