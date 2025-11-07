@@ -15,6 +15,7 @@ from app.core.routes.status import router as status_router
 from app.core.scheduler import scheduler_manager
 from app.ecommerce.routes.deals import router as deals_router
 from app.ecommerce.routes.products import router as products_router
+from app.travel.routes.travel import router as travel_router
 
 
 @asynccontextmanager
@@ -36,6 +37,7 @@ app = FastAPI(
     version=settings.version,
     description="Multi-category deal aggregation and price tracking platform",
     lifespan=lifespan,
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
 )
 
 # Add CORS middleware
@@ -53,3 +55,4 @@ app.include_router(status_router)
 app.include_router(monitoring_router)
 app.include_router(products_router)
 app.include_router(deals_router)
+app.include_router(travel_router)
