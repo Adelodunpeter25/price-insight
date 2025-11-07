@@ -1,48 +1,16 @@
-@import './styles/animations.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  }
-  
-  html {
-    background-color: #111827;
-    color: white;
-  }
-  
-  body {
-    background-color: #111827;
-    color: white;
-    min-height: 100vh;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@layer components {
-  .glass-card {
-    background-color: rgba(24, 24, 27, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(39, 39, 42, 0.5);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-  
-  .glass-button {
-    background-color: rgba(39, 39, 42, 0.5);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(63, 63, 70, 0.5);
-    transition: all 200ms;
-  }
-  
-  .glass-button:hover {
-    background-color: rgba(63, 63, 70, 0.5);
-  }
-}
-
-@layer utilities {
-  .animate-stagger {
-    animation-delay: calc(var(--stagger) * 100ms);
-  }
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #111827;
+  color: white;
+  min-height: 100vh;
 }
