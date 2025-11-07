@@ -25,55 +25,46 @@ export const Sidebar = () => {
   return (
     <>
       {/* Mobile overlay */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-          />
-        )}
-      </AnimatePresence>
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300 ${
+          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Sidebar */}
-      <motion.aside
-        initial={{ x: -280 }}
-        animate={{ x: sidebarOpen ? 0 : -280 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`
-          fixed top-0 left-0 z-50 h-full w-64 glass-card border-r border-zinc-800/50
-          lg:translate-x-0 lg:static lg:z-auto
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
       >
-        <div className="flex items-center justify-between p-4 lg:hidden">
-          <span className="text-white font-semibold text-lg">Menu</span>
+        <div className="flex items-center justify-between p-6 border-b border-gray-700 lg:hidden">
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+              <span className="text-white font-bold text-lg">P</span>
+            </div>
+            <span className="text-white font-bold text-lg">Price Insight</span>
+          </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="text-zinc-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-colors p-2"
           >
             <X size={20} />
           </button>
         </div>
 
-        <nav className="px-4 py-6 space-y-2">
-          {navigation.map((item, index) => (
-            <motion.div
-              key={item.name}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
+        <nav className="p-6">
+          <div className="space-y-1">
+            {navigation.map((item, index) => (
               <NavLink
+                key={item.name}
                 to={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  `flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-accent text-white'
-                      : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
                   }`
                 }
               >
@@ -87,10 +78,10 @@ export const Sidebar = () => {
                   </Badge>
                 )}
               </NavLink>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </nav>
-      </motion.aside>
+      </aside>
     </>
   );
 };
