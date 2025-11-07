@@ -1,6 +1,5 @@
 export { ProtectedRoute } from './ProtectedRoute';
-import ErrorBoundary from './ErrorBoundary';
-export { ErrorBoundary };
+export { ErrorBoundary } from './ErrorBoundary';
 
 // Re-export from subdirectories
 export * from './common';

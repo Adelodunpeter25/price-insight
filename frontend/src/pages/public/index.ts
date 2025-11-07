@@ -1,6 +1,8 @@
-export { default as Home } from './Home';
-export { default as About } from './About';
-export { default as Contact } from './Contact';
-export { default as FAQ } from './FAQ';
-export { default as Privacy } from './Privacy';
-export { default as Terms } from './Terms';
+import Home from './Home';
+import About from './About';
+import Contact from './Contact';
+import FAQ from './FAQ';
+import Privacy from './Privacy';
+import Terms from './Terms';
+
+export { Home, About, Contact, FAQ, Privacy, Terms };

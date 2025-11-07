@@ -1,4 +1,6 @@
 // Barrel exports for auth pages
-export { Login } from './Login';
-export { Signup } from './Signup';
-export { ForgotPassword } from './ForgotPassword';
+import { Login } from './Login';
+import { Signup } from './Signup';
+import { ForgotPassword } from './ForgotPassword';
+
+export { Login, Signup, ForgotPassword };

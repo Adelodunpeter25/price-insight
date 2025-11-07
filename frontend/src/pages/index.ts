@@ -1,11 +1,13 @@
 // Barrel exports for all pages
-export { Dashboard } from './Dashboard';
-export { Products } from './Products';
-export { ProductDetail } from './ProductDetail';
-export { Deals } from './Deals';
-export { Alerts } from './Alerts';
-export { Settings } from './Settings';
-export { NotFound } from './NotFound';
+import Dashboard from './Dashboard';
+import Products from './Products';
+import ProductDetail from './ProductDetail';
+import Deals from './Deals';
+import Alerts from './Alerts';
+import Settings from './Settings';
+import NotFound from './NotFound';
+
+export { Dashboard, Products, ProductDetail, Deals, Alerts, Settings, NotFound };
 
 // Auth pages
 export * from './auth';
