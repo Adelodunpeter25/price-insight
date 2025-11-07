@@ -161,8 +161,8 @@ export const Signup = () => {
             </Link>
           </div>
         </motion.div>
+      </motion.div>
       </div>
     </AuthLayout>
   );
-};
 };
