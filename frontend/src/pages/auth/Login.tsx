@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
 import { useToast } from '../../hooks/useToast';
 import { AuthLayout } from '../../components/layout/AuthLayout';
@@ -114,6 +114,7 @@ export const Login = () => {
             </Link>
           </div>
         </motion.div>
+      </motion.div>
       </div>
     </AuthLayout>
   );
