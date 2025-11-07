@@ -1,6 +1,6 @@
 # Price Insight API
 
-REST API for multi-category deal aggregation that tracks prices across e-commerce, travel, real estate, and utilities.
+REST API for multi-category price tracking and deal aggregation across e-commerce, travel, real estate, and utilities
 
 ## Features
 
