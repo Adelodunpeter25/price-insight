@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { Button } from '../components/common/Button';
 
 const NotFound = () => {
@@ -29,22 +29,13 @@ const NotFound = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="space-y-4"
         >
           <Link to="/">
             <Button variant="primary" size="lg" className="w-full">
               <Home size={16} className="mr-2" />
-              Go to Dashboard
+              Back to Home
             </Button>
           </Link>
-          
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center justify-center w-full text-zinc-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft size={16} className="mr-2" />
-            Go Back
-          </button>
         </motion.div>
       </motion.div>
     </div>

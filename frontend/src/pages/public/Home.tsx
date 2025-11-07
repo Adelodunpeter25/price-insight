@@ -117,44 +117,8 @@ export default function Home() {
                 </span>
               </Link>
             </div>
-            
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto"
-            >
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">10K+</div>
-                <div className="text-gray-400">Products Tracked</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">500+</div>
-                <div className="text-gray-400">Active Users</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">₦2M+</div>
-                <div className="text-gray-400">Money Saved</div>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
-        
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="flex flex-col items-center text-gray-400">
-            <span className="text-sm mb-2">Scroll to explore</span>
-            <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
-            </div>
-          </div>
-        </motion.div>
       </section>
 
       {/* Features Section */}
