@@ -10,11 +10,14 @@
   }
   
   html {
-    @apply bg-gray-900 text-white;
+    background-color: #111827;
+    color: white;
   }
   
   body {
-    @apply bg-gray-900 text-white min-h-screen;
+    background-color: #111827;
+    color: white;
+    min-height: 100vh;
   }
 }
 
