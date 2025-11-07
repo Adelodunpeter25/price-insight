@@ -10,11 +10,11 @@
   }
   
   html {
-    @apply dark;
+    @apply bg-gray-900 text-white;
   }
   
   body {
-    @apply bg-black text-white min-h-screen;
+    @apply bg-gray-900 text-white min-h-screen;
   }
 }
 
