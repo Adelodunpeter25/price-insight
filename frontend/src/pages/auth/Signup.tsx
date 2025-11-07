@@ -81,6 +81,7 @@ export const Signup = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               leftIcon={<User size={16} />}
+              required
             />
           </motion.div>
 
