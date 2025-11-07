@@ -20,7 +20,7 @@ class Hotel(BaseModel):
     room_type = Column(String(100), nullable=False)
     price_per_night = Column(Numeric(10, 2), nullable=False)
     total_price = Column(Numeric(10, 2), nullable=False)
-    currency = Column(String(3), nullable=False, default="USD")
+    currency = Column(String(3), nullable=False, default="NGN")
     url = Column(Text, nullable=False)
     site = Column(String(100), nullable=False)
     guests = Column(Integer, nullable=False, default=2)

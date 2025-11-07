@@ -15,7 +15,7 @@ class PriceHistory(BaseModel):
 
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False, index=True)
     price: Mapped[Decimal] = mapped_column(DECIMAL(10, 2), nullable=False)
-    currency: Mapped[str] = mapped_column(String(3), default="USD")
+    currency: Mapped[str] = mapped_column(String(3), default="NGN")
     availability: Mapped[str] = mapped_column(String(50), nullable=True)
     source: Mapped[str] = mapped_column(String(100), default="scraper")
 

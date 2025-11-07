@@ -64,7 +64,7 @@ class GenericScraper(BaseScraper):
                 "url": url,
                 "availability": availability,
                 "site": site,
-                "currency": "USD",  # Default
+                "currency": "NGN",  # Default
             }
 
         except Exception as e:

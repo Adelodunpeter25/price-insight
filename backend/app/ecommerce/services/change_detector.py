@@ -26,7 +26,7 @@ class ChangeDetector:
         self,
         product_id: int,
         new_price: Decimal,
-        currency: str = "USD",
+        currency: str = "NGN",
         availability: Optional[str] = None,
     ) -> List[AlertHistory]:
         """Process a price change and trigger alerts if needed."""

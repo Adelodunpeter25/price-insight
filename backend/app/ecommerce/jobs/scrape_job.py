@@ -51,7 +51,7 @@ async def scrape_tracked_products():
                                 alerts = await change_detector.process_price_change(
                                     product.id,
                                     data["price"],
-                                    data.get("currency", "USD"),
+                                    data.get("currency", "NGN"),
                                     data.get("availability"),
                                 )
 

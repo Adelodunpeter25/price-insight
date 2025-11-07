@@ -75,7 +75,7 @@ class AmazonScraper(BaseScraper):
                 "url": url,
                 "availability": availability,
                 "site": "amazon",
-                "currency": "USD",  # Default, could be extracted
+                "currency": "NGN",  # Default, could be extracted
             }
 
         except Exception as e:
