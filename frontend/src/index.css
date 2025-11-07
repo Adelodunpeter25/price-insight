@@ -23,11 +23,21 @@
 
 @layer components {
   .glass-card {
-    @apply bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 shadow-xl;
+    background-color: rgba(24, 24, 27, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(39, 39, 42, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
   
   .glass-button {
-    @apply bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/50 hover:bg-zinc-700/50 transition-all duration-200;
+    background-color: rgba(39, 39, 42, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(63, 63, 70, 0.5);
+    transition: all 200ms;
+  }
+  
+  .glass-button:hover {
+    background-color: rgba(63, 63, 70, 0.5);
   }
 }
 
