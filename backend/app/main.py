@@ -17,6 +17,7 @@ from app.core.scheduler import scheduler_manager
 from app.ecommerce.routes.deals import router as deals_router
 from app.ecommerce.routes.products import router as products_router
 from app.travel.routes.travel import router as travel_router
+from app.real_estate.routes import alerts_router, deals_router as re_deals_router, properties_router
 
 
 @asynccontextmanager
@@ -58,3 +59,6 @@ app.include_router(monitoring_router)
 app.include_router(products_router)
 app.include_router(deals_router)
 app.include_router(travel_router)
+app.include_router(properties_router)
+app.include_router(re_deals_router)
+app.include_router(alerts_router)
