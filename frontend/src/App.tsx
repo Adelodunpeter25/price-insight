@@ -1,16 +1,14 @@
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
-import { ProtectedRoute } from '@/components';
-import { Spinner } from '@/components/common';
-import { ErrorBoundary } from '@/components';
+import { ProtectedRoute, Spinner, ErrorBoundary } from '@/components';
 
 // Public pages
 import { Home, About, Contact, FAQ, Privacy, Terms } from '@/pages/public';
 import { Login, Signup, ForgotPassword } from '@/pages/auth';
-import NotFound from '@/pages/NotFound';
+import { NotFound } from '@/pages';
 
 // Lazy load protected pages
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
