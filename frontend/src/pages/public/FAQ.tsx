@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { PublicHeader } from '../../components/layout';
+import { PublicHeader, PublicFooter } from '../../components/layout';
 
 const faqs = [
   {
@@ -129,6 +129,7 @@ export default function FAQ() {
           </div>
         </motion.div>
       </div>
+      <PublicFooter />
     </div>
   );
 }

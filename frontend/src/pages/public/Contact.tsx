@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { PublicHeader } from '../../components/layout';
+import { PublicHeader, PublicFooter } from '../../components/layout';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -183,6 +183,7 @@ export default function Contact() {
           </div>
         </motion.div>
       </div>
+      <PublicFooter />
     </div>
   );
 }

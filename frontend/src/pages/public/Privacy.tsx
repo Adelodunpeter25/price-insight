@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { PublicHeader } from '../../components/layout';
+import { PublicHeader, PublicFooter } from '../../components/layout';
 
 export default function Privacy() {
   return (
@@ -159,6 +159,7 @@ export default function Privacy() {
           </div>
         </motion.div>
       </div>
+      <PublicFooter />
     </div>
   );
 }

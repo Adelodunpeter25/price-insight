@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { PublicHeader } from '../../components/layout';
+import { PublicHeader, PublicFooter } from '../../components/layout';
 
 export default function Terms() {
   return (
@@ -185,6 +185,7 @@ export default function Terms() {
           </div>
         </motion.div>
       </div>
+      <PublicFooter />
     </div>
   );
 }
