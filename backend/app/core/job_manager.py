@@ -1,10 +1,13 @@
 """Job manager for registering and managing scheduled jobs."""
 
 from apscheduler.triggers.interval import IntervalTrigger
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.scheduler import scheduler_manager
 from app.ecommerce.jobs.scrape_job import scrape_tracked_products
+from app.travel.jobs.travel_scrape_job import scrape_travel_prices
 
 
 class JobManager:
@@ -34,9 +37,19 @@ class JobManager:
             name="Scrape Tracked Products",
             replace_existing=True,
         )
-
         self.registered_jobs["scrape_products"] = job
         logger.info("Registered product scraping job (every 6 hours)")
+
+        # Travel scraping job - every 4 hours
+        travel_job = scheduler_manager.add_job(
+            func=scrape_travel_prices,
+            trigger=IntervalTrigger(hours=4),
+            id="scrape_travel",
+            name="Scrape Travel Prices",
+            replace_existing=True,
+        )
+        self.registered_jobs["scrape_travel"] = travel_job
+        logger.info("Registered travel scraping job (every 4 hours)")
 
     def get_job_status(self):
         """Get status of all registered jobs."""
