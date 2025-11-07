@@ -1,22 +1,22 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
-import { ProtectedRoute, Spinner, ErrorBoundary } from '@/components';
+import { ProtectedRoute, Spinner, ErrorBoundary } from './components';
 
 // Public pages
-import { Home, About, Contact, FAQ, Privacy, Terms } from '@/pages/public';
-import { Login, Signup, ForgotPassword } from '@/pages/auth';
-import { NotFound } from '@/pages';
+import { Home, About, Contact, FAQ, Privacy, Terms } from './pages/public';
+import { Login, Signup, ForgotPassword } from './pages/auth';
+import { NotFound } from './pages';
 
 // Lazy load protected pages
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
-const Products = lazy(() => import('@/pages/Products'));
-const ProductDetail = lazy(() => import('@/pages/ProductDetail'));
-const Deals = lazy(() => import('@/pages/Deals'));
-const Alerts = lazy(() => import('@/pages/Alerts'));
-const Settings = lazy(() => import('@/pages/Settings'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Deals = lazy(() => import('./pages/Deals'));
+const Alerts = lazy(() => import('./pages/Alerts'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 function App() {
   return (

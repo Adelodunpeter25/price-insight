@@ -1,6 +1,5 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
-import { DashboardLayout } from '@/components/layouts';
+import { DashboardLayout } from '../components/layout/DashboardLayout';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
