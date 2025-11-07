@@ -74,7 +74,7 @@ export default function Home() {
               className="inline-flex items-center px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium mb-8"
             >
               <span className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></span>
-              Live Price Monitoring Across Multiple Categories
+              Smart Deal Detection & Price Alerts
             </motion.div>
             
             {/* Main heading */}
@@ -133,7 +133,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -151,6 +152,34 @@ export default function Home() {
                 </p>
               </motion.div>
             ))}
+          </div>
+          
+          {/* Mobile Carousel */}
+          <div className="md:hidden">
+            <div className="flex overflow-x-auto gap-6 pb-4 snap-x snap-mandatory scrollbar-hide">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="bg-gray-900/50 backdrop-blur-md border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-colors min-w-[280px] snap-center"
+                >
+                  <feature.icon className="h-12 w-12 text-blue-400 mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-300">
+                    {feature.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+            <div className="flex justify-center mt-4 space-x-2">
+              {features.map((_, index) => (
+                <div key={index} className="w-2 h-2 bg-gray-600 rounded-full"></div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

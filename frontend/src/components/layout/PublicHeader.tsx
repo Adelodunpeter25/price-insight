@@ -73,71 +73,80 @@ export function PublicHeader() {
       </div>
 
       {/* Mobile Sidebar */}
-      <div 
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden transition-opacity duration-300 ${
-          isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={() => setIsMobileMenuOpen(false)}
-      />
-      <div className={`fixed top-0 right-0 h-full w-64 bg-gray-900 z-50 md:hidden transform transition-transform duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
-          <span className="text-white font-bold text-lg">Menu</span>
-          <button
+      {isMobileMenuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="text-gray-300 hover:text-white transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
-        <div className="p-4 space-y-4">
-          <Link 
-            to="/" 
-            className="block text-gray-300 hover:text-white transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Home
-          </Link>
-          <Link 
-            to="/about" 
-            className="block text-gray-300 hover:text-white transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            About
-          </Link>
-          <Link 
-            to="/contact" 
-            className="block text-gray-300 hover:text-white transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Contact
-          </Link>
-          <Link 
-            to="/faq" 
-            className="block text-gray-300 hover:text-white transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            FAQ
-          </Link>
-          <div className="border-t border-gray-800 pt-4 mt-4 space-y-4">
-            <Link 
-              to="/login" 
-              className="block text-gray-300 hover:text-white transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup" 
-              className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-center"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Sign Up
-            </Link>
+          />
+          <div className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-out ${
+            isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}>
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-lg">P</span>
+                </div>
+                <span className="text-white font-bold text-lg">Price Insight</span>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors p-2"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              <nav className="space-y-1">
+                <Link 
+                  to="/" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link 
+                  to="/about" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+                <Link 
+                  to="/faq" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  FAQ
+                </Link>
+              </nav>
+              <div className="mt-8 pt-6 border-t border-gray-700 space-y-3">
+                <Link 
+                  to="/login" 
+                  className="block w-full text-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </nav>
   );
 }
