@@ -6,7 +6,12 @@ export function PublicHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-white">Price Insight</Link>
+            <Link to="/" className="flex items-center text-xl font-bold text-white">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+                <span className="text-white font-bold text-lg">P</span>
+              </div>
+              Price Insight
+            </Link>
           </div>
           <div className="flex items-center space-x-8">
             <Link 

@@ -191,6 +191,67 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ Preview Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-gray-300">
+              Quick answers to common questions
+            </p>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Is Price Insight free to use?
+              </h3>
+              <p className="text-gray-300">
+                Yes! Price Insight offers a free tier with basic price tracking and alerts. Premium plans are available for advanced features.
+              </p>
+            </div>
+            
+            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                How accurate are the price alerts?
+              </h3>
+              <p className="text-gray-300">
+                Our system checks prices multiple times per day with high accuracy. We recommend verifying prices on the retailer's website before purchasing.
+              </p>
+            </div>
+            
+            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                What categories can I track?
+              </h3>
+              <p className="text-gray-300">
+                You can track prices across e-commerce products, travel bookings, real estate properties, and utility services.
+              </p>
+            </div>
+            
+            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                How do I set up price alerts?
+              </h3>
+              <p className="text-gray-300">
+                Simply add a product URL, set your desired price threshold, and we'll notify you via email when the price drops.
+              </p>
+            </div>
+          </div>
+          
+          <div className="text-center mt-8">
+            <Link 
+              to="/faq"
+              className="text-blue-400 hover:text-blue-300 font-semibold"
+            >
+              View All FAQs →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">

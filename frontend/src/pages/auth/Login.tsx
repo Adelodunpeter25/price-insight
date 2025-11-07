@@ -30,11 +30,12 @@ export const Login = () => {
 
   return (
     <AuthLayout>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, staggerChildren: 0.1 }}
-      >
+      <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-8 max-w-md mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, staggerChildren: 0.1 }}
+        >
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
           <p className="text-zinc-400 text-sm">Sign in to your account</p>
@@ -113,7 +114,7 @@ export const Login = () => {
             </Link>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
     </AuthLayout>
   );
 };

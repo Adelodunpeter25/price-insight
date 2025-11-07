@@ -8,7 +8,9 @@ export function PublicFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center mb-4">
-              <TrendingDown className="h-8 w-8 text-blue-400 mr-2" />
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+                <span className="text-white font-bold text-lg">P</span>
+              </div>
               <h3 className="text-lg font-semibold text-white">Price Insight</h3>
             </div>
             <p className="text-gray-400">

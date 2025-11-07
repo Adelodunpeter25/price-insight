@@ -14,7 +14,15 @@ export default function Privacy() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy</h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-4xl font-bold text-white">Privacy Policy</h1>
+            <Link 
+              to="/"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              ← Back to Home
+            </Link>
+          </div>
           <p className="text-gray-400 mb-8">Last updated: December 2024</p>
           
           <div className="prose prose-invert max-w-none space-y-8">
