@@ -12,6 +12,7 @@ from app.utils.pagination import PaginatedResponse
 # Deal Schemas
 class TravelDealCreate(BaseModel):
     """Schema for creating travel deal."""
+
     flight_id: Optional[int] = None
     hotel_id: Optional[int] = None
     discount_percent: Optional[float] = None
@@ -25,6 +26,7 @@ class TravelDealCreate(BaseModel):
 
 class TravelDealResponse(BaseModel):
     """Schema for travel deal response."""
+
     id: int
     flight_id: Optional[int] = None
     hotel_id: Optional[int] = None
@@ -44,12 +46,14 @@ class TravelDealResponse(BaseModel):
 
 class TravelDealListResponse(PaginatedResponse):
     """Schema for paginated travel deal list."""
+
     items: List[TravelDealResponse]
 
 
 # Alert Schemas
 class TravelAlertRuleCreate(BaseModel):
     """Schema for creating travel alert rule."""
+
     flight_id: Optional[int] = None
     hotel_id: Optional[int] = None
     rule_type: str  # price_drop, threshold, deal
@@ -60,6 +64,7 @@ class TravelAlertRuleCreate(BaseModel):
 
 class TravelAlertRuleResponse(BaseModel):
     """Schema for travel alert rule response."""
+
     id: int
     flight_id: Optional[int] = None
     hotel_id: Optional[int] = None
@@ -76,6 +81,7 @@ class TravelAlertRuleResponse(BaseModel):
 
 class TravelAlertListResponse(PaginatedResponse):
     """Schema for paginated travel alert list."""
+
     items: List[TravelAlertRuleResponse]
 
 
@@ -83,7 +89,9 @@ class FlightCreate(BaseModel):
     """Schema for creating flight tracking."""
 
     origin: str = Field(..., min_length=3, max_length=10, description="Origin airport code")
-    destination: str = Field(..., min_length=3, max_length=10, description="Destination airport code")
+    destination: str = Field(
+        ..., min_length=3, max_length=10, description="Destination airport code"
+    )
     departure_date: date = Field(..., description="Departure date")
     return_date: Optional[date] = Field(None, description="Return date for round trip")
     flight_class: str = Field("economy", description="Flight class")

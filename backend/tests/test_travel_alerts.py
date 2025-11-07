@@ -1,7 +1,7 @@
 """Tests for travel alerts."""
 
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 from app.travel.services.travel_alert_service import TravelAlertService
 
@@ -19,9 +19,9 @@ class TestTravelAlertService(unittest.IsolatedAsyncioTestCase):
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = []
         self.mock_db.execute = AsyncMock(return_value=mock_result)
-        
+
         result = await self.service.get_flight_alert_rules(1)
-        
+
         self.assertEqual(result, [])
         self.mock_db.execute.assert_called_once()
 
@@ -30,16 +30,14 @@ class TestTravelAlertService(unittest.IsolatedAsyncioTestCase):
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = []
         self.mock_db.execute = AsyncMock(return_value=mock_result)
-        
+
         result = await self.service.get_hotel_alert_rules(1)
-        
+
         self.assertEqual(result, [])
         self.mock_db.execute.assert_called_once()
 
     async def test_send_alert_notification(self):
         """Test sending alert notification."""
         # This method exists and should not raise exception
-        await self.service.send_alert_notification(
-            "Test alert message", "console"
-        )
+        await self.service.send_alert_notification("Test alert message", "console")
         # No assertion needed - just testing it doesn't crash

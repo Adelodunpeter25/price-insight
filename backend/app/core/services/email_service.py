@@ -1,5 +1,6 @@
 """Email service using Resend."""
 
+import logging
 from pathlib import Path
 from typing import List, Optional
 
@@ -8,8 +9,6 @@ from jinja2 import Environment, FileSystemLoader
 
 from app.core.config import settings
 from app.core.logging import log_event
-
-import logging
 
 logger = logging.getLogger(__name__)
 

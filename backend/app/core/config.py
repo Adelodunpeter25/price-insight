@@ -16,15 +16,15 @@ class Settings(BaseSettings):
 
     # Redis
     redis_url: str = ""
-    
+
     # JWT
     secret_key: str = ""
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
-    
+
     # Exchange Rate API
     exchange_rate_api_key: str = ""
-    
+
     # Email service (Resend)
     resend_api_key: str = ""
     from_email: str = "noreply@priceinsight.ng"

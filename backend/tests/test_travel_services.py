@@ -1,7 +1,7 @@
 """Tests for travel services."""
 
 import unittest
-from datetime import date, datetime
+from datetime import date
 from unittest.mock import AsyncMock, MagicMock
 
 from app.travel.services.deal_service import TravelDealService
@@ -24,7 +24,7 @@ class TestTravelService(unittest.IsolatedAsyncioTestCase):
         self.mock_db.commit = AsyncMock()
         self.mock_db.refresh = AsyncMock()
 
-        result = await self.service.create_flight(
+        await self.service.create_flight(
             origin="NYC",
             destination="LAX",
             departure_date=date(2024, 12, 1),
@@ -32,7 +32,7 @@ class TestTravelService(unittest.IsolatedAsyncioTestCase):
             flight_class="economy",
             passengers=1,
             url="https://example.com",
-            site="example"
+            site="example",
         )
 
         self.mock_db.add.assert_called_once()
@@ -46,7 +46,7 @@ class TestTravelService(unittest.IsolatedAsyncioTestCase):
         self.mock_db.commit = AsyncMock()
         self.mock_db.refresh = AsyncMock()
 
-        result = await self.service.create_hotel(
+        await self.service.create_hotel(
             name="Test Hotel",
             location="NYC",
             check_in=date(2024, 12, 1),
@@ -54,7 +54,7 @@ class TestTravelService(unittest.IsolatedAsyncioTestCase):
             room_type="standard",
             guests=2,
             url="https://example.com",
-            site="example"
+            site="example",
         )
 
         self.mock_db.add.assert_called_once()
@@ -77,12 +77,12 @@ class TestTravelDealService(unittest.IsolatedAsyncioTestCase):
         self.mock_db.commit = AsyncMock()
         self.mock_db.refresh = AsyncMock()
 
-        result = await self.service.create_deal(
+        await self.service.create_deal(
             flight_id=1,
             discount_percent=20.0,
             original_price=500.0,
             deal_price=400.0,
-            deal_source="test"
+            deal_source="test",
         )
 
         self.mock_db.add.assert_called_once()

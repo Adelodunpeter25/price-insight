@@ -65,5 +65,5 @@ make format       # Format code
 - **Backend**: FastAPI, SQLAlchemy, PostgreSQL
 - **Auth**: JWT with Argon2 hashing
 - **Email**: Resend API with HTML templates
-- **Scraping**: aiohttp with rate limiting
+- **Scraping**: httpx + BeautifulSoup4 with rate limiting
 - **Scheduling**: APScheduler

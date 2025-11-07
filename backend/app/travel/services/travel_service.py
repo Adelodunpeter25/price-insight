@@ -1,7 +1,7 @@
 """Travel service for database operations."""
 
 import logging
-from typing import List, Optional
+from typing import List
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,11 +42,11 @@ class TravelService:
             price=0.0,  # Will be updated by scraper
             currency="NGN",  # All prices normalized to Naira
         )
-        
+
         self.db.add(flight)
         await self.db.commit()
         await self.db.refresh(flight)
-        
+
         logger.info(f"Created flight tracking: {origin}-{destination}")
         return flight
 
@@ -75,22 +75,22 @@ class TravelService:
             total_price=0.0,
             currency="NGN",  # All prices normalized to Naira
         )
-        
+
         self.db.add(hotel)
         await self.db.commit()
         await self.db.refresh(hotel)
-        
+
         logger.info(f"Created hotel tracking: {name} in {location}")
         return hotel
 
     async def get_tracked_flights(self) -> List[Flight]:
         """Get all tracked flights."""
-        query = select(Flight).where(Flight.is_tracked == True, Flight.is_active == True)
+        query = select(Flight).where(Flight.is_tracked, Flight.is_active)
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
     async def get_tracked_hotels(self) -> List[Hotel]:
         """Get all tracked hotels."""
-        query = select(Hotel).where(Hotel.is_tracked == True, Hotel.is_active == True)
+        query = select(Hotel).where(Hotel.is_tracked, Hotel.is_active)
         result = await self.db.execute(query)
         return list(result.scalars().all())

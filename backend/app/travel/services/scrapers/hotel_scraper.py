@@ -4,7 +4,6 @@ from decimal import Decimal
 from typing import Dict, Optional
 
 from app.ecommerce.services.scraper_base import BaseScraper
-from app.utils.currency import currency_converter
 
 
 class HotelScraper(BaseScraper):
@@ -15,30 +14,41 @@ class HotelScraper(BaseScraper):
         try:
             # Generic selectors for common travel sites
             price_selectors = [
-                ".price", ".rate", ".cost", "[data-price]", ".amount",
-                ".room-price", ".nightly-rate", ".hotel-price", ".total-price"
+                ".price",
+                ".rate",
+                ".cost",
+                "[data-price]",
+                ".amount",
+                ".room-price",
+                ".nightly-rate",
+                ".hotel-price",
+                ".total-price",
             ]
-            
+
             rating_selectors = [
-                ".rating", ".score", ".stars", "[data-rating]",
-                ".hotel-rating", ".review-score"
+                ".rating",
+                ".score",
+                ".stars",
+                "[data-rating]",
+                ".hotel-rating",
+                ".review-score",
             ]
-            
+
             price_per_night = self._extract_price(soup, price_selectors)
             rating = self._extract_rating(soup, rating_selectors)
-            
+
             if not price_per_night:
                 return None
-                
+
             return {
                 "price_per_night": price_per_night,
                 "total_price": price_per_night,  # Will be calculated based on nights
                 "rating": rating,
                 "currency": "NGN",  # Will be normalized by base scraper
                 "site": self._get_site_name(url),
-                "url": url
+                "url": url,
             }
-            
+
         except Exception as e:
             self.logger.error(f"Failed to extract hotel data: {e}")
             return None
@@ -68,8 +78,9 @@ class HotelScraper(BaseScraper):
     def _parse_price(self, text: str) -> Optional[Decimal]:
         """Parse price from text."""
         import re
+
         # Remove currency symbols and extract numbers
-        price_match = re.search(r'[\d,]+\.?\d*', text.replace(',', ''))
+        price_match = re.search(r"[\d,]+\.?\d*", text.replace(",", ""))
         if price_match:
             try:
                 return Decimal(price_match.group())
@@ -80,8 +91,9 @@ class HotelScraper(BaseScraper):
     def _parse_rating(self, text: str) -> Optional[Decimal]:
         """Parse rating from text."""
         import re
+
         # Extract rating (usually 1-5 or 1-10)
-        rating_match = re.search(r'(\d+\.?\d*)', text)
+        rating_match = re.search(r"(\d+\.?\d*)", text)
         if rating_match:
             try:
                 rating = Decimal(rating_match.group(1))
@@ -94,4 +106,5 @@ class HotelScraper(BaseScraper):
     def _get_site_name(self, url: str) -> str:
         """Extract site name from URL."""
         from urllib.parse import urlparse
-        return urlparse(url).netloc.replace('www.', '')
+
+        return urlparse(url).netloc.replace("www.", "")

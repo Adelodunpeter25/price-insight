@@ -1,7 +1,6 @@
 """User model."""
 
-from sqlalchemy import Column, String, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, String
 
 from app.core.models.base import BaseModel
 
@@ -10,9 +9,7 @@ class User(BaseModel):
     """User model."""
 
     __tablename__ = "users"
-    __table_args__ = (
-        {"extend_existing": True}
-    )
+    __table_args__ = {"extend_existing": True}
 
     email = Column(String(255), unique=True, nullable=False, index=True)
     hashed_password = Column(String(255), nullable=False)

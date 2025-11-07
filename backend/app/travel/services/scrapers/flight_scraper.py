@@ -4,7 +4,6 @@ from decimal import Decimal
 from typing import Dict, Optional
 
 from app.ecommerce.services.scraper_base import BaseScraper
-from app.utils.currency import currency_converter
 
 
 class FlightScraper(BaseScraper):
@@ -15,29 +14,39 @@ class FlightScraper(BaseScraper):
         try:
             # Generic selectors for common travel sites
             price_selectors = [
-                ".price", ".fare", ".cost", "[data-price]", ".amount",
-                ".flight-price", ".total-price", ".booking-price"
+                ".price",
+                ".fare",
+                ".cost",
+                "[data-price]",
+                ".amount",
+                ".flight-price",
+                ".total-price",
+                ".booking-price",
             ]
-            
+
             airline_selectors = [
-                ".airline", ".carrier", ".operator", "[data-airline]",
-                ".flight-operator", ".airline-name"
+                ".airline",
+                ".carrier",
+                ".operator",
+                "[data-airline]",
+                ".flight-operator",
+                ".airline-name",
             ]
-            
+
             price = self._extract_price(soup, price_selectors)
             airline = self._extract_text(soup, airline_selectors)
-            
+
             if not price:
                 return None
-                
+
             return {
                 "price": price,
                 "airline": airline,
                 "currency": "NGN",  # Will be normalized by base scraper
                 "site": self._get_site_name(url),
-                "url": url
+                "url": url,
             }
-            
+
         except Exception as e:
             self.logger.error(f"Failed to extract flight data: {e}")
             return None
@@ -64,8 +73,9 @@ class FlightScraper(BaseScraper):
     def _parse_price(self, text: str) -> Optional[Decimal]:
         """Parse price from text."""
         import re
+
         # Remove currency symbols and extract numbers
-        price_match = re.search(r'[\d,]+\.?\d*', text.replace(',', ''))
+        price_match = re.search(r"[\d,]+\.?\d*", text.replace(",", ""))
         if price_match:
             try:
                 return Decimal(price_match.group())
@@ -76,4 +86,5 @@ class FlightScraper(BaseScraper):
     def _get_site_name(self, url: str) -> str:
         """Extract site name from URL."""
         from urllib.parse import urlparse
-        return urlparse(url).netloc.replace('www.', '')
+
+        return urlparse(url).netloc.replace("www.", "")

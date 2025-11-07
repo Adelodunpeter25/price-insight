@@ -1,22 +1,21 @@
 """Authentication service."""
 
+import logging
 from typing import Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logging import log_event
 from app.core.models.user import User
 from app.core.security import (
-    hash_password,
-    verify_password,
     create_access_token,
     create_refresh_token,
+    hash_password,
+    verify_password,
 )
 from app.core.services.email_service import EmailService
-from app.core.logging import log_event
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -50,17 +49,16 @@ class AuthService:
         self.db.add(user)
         await self.db.commit()
         await self.db.refresh(user)
-        
+
         # Send welcome email
         try:
             await self.email_service.send_welcome_email(
-                to_email=user.email,
-                user_name=user.full_name or user.email.split('@')[0]
+                to_email=user.email, user_name=user.full_name or user.email.split("@")[0]
             )
             log_event("user_welcome_email_sent", {"user_id": user.id, "email": user.email})
         except Exception as e:
             logger.error(f"Failed to send welcome email to {user.email}: {e}")
-        
+
         return user
 
     async def authenticate_user(self, email: str, password: str) -> Optional[User]:

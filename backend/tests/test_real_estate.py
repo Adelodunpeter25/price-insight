@@ -2,10 +2,8 @@
 
 import unittest
 from decimal import Decimal
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
-from app.real_estate.models import Property, PropertyPriceHistory
-from app.real_estate.services.property_service import PropertyService
 from app.real_estate.services.scrapers.property_scraper import PropertyScraper
 
 
@@ -25,7 +23,7 @@ class TestPropertyService(unittest.TestCase):
             "currency": "NGN",
             "is_tracked": 1,
         }
-        
+
         self.assertEqual(property_data["name"], "Test Property")
         self.assertEqual(property_data["property_type"], "house")
         self.assertEqual(property_data["price"], Decimal("50000000"))
@@ -40,7 +38,7 @@ class TestPropertyService(unittest.TestCase):
             "price_per_sqm": Decimal("150000"),
             "listing_status": "active",
         }
-        
+
         self.assertEqual(price_history_data["property_id"], 1)
         self.assertEqual(price_history_data["price"], Decimal("45000000"))
         self.assertEqual(price_history_data["currency"], "NGN")

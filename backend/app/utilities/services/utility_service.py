@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.utilities.models import UtilityService, UtilityPriceHistory
+from app.utilities.models import UtilityPriceHistory, UtilityService
 
 
 class UtilityServiceManager:

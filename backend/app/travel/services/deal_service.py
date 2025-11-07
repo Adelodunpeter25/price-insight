@@ -48,8 +48,7 @@ class TravelDealService:
     async def get_active_deals(self) -> List[TravelDeal]:
         """Get all active travel deals."""
         query = select(TravelDeal).where(
-            TravelDeal.is_active == True,
-            TravelDeal.deal_end_date > datetime.utcnow()
+            TravelDeal.is_active, TravelDeal.deal_end_date > datetime.utcnow()
         )
         result = await self.db.execute(query)
         return result.scalars().all()

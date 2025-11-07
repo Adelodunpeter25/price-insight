@@ -117,7 +117,7 @@ class TestNotificationService(unittest.TestCase):
         mock_alert.id = 1
 
         # Should return False for duplicate
-        result = self.service.send_notification(mock_alert)
+        self.service.send_notification(mock_alert)
         # Note: This would need to be async in real implementation
 
 

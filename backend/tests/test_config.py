@@ -10,14 +10,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.database import get_db
-from app.core.models.base import Base
-from app.main import app
 
 # Import all models to ensure they're registered
 from app.core.models.alert import AlertHistory, AlertRule  # noqa: F401
+from app.core.models.base import Base
 from app.ecommerce.models.deal import Deal  # noqa: F401
 from app.ecommerce.models.price_history import PriceHistory  # noqa: F401
 from app.ecommerce.models.product import Product  # noqa: F401
+from app.main import app
 
 # Test database URL (SQLite in memory)
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"

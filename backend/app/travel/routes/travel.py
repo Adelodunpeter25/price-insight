@@ -6,10 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_database_session, get_current_user
+from app.core.deps import get_current_user, get_database_session
 from app.core.models.user import User
 from app.travel.models import Flight, Hotel
-from app.travel.models.deal import TravelDeal
 from app.travel.models.travel_alert import TravelAlertRule
 from app.travel.schemas.travel import (
     FlightCreate,
@@ -21,7 +20,6 @@ from app.travel.schemas.travel import (
     TravelAlertListResponse,
     TravelAlertRuleCreate,
     TravelAlertRuleResponse,
-    TravelDealCreate,
     TravelDealListResponse,
     TravelDealResponse,
 )
@@ -34,13 +32,13 @@ router = APIRouter(prefix="/api/travel", tags=["Travel"])
 
 @router.post("/flights", response_model=FlightResponse, status_code=201)
 async def create_flight(
-    flight_data: FlightCreate, 
+    flight_data: FlightCreate,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Add flight to track."""
     travel_service = TravelService(db)
-    
+
     try:
         flight = await travel_service.create_flight(
             origin=flight_data.origin,
@@ -64,33 +62,33 @@ async def list_flights(
     origin: Optional[str] = Query(None),
     destination: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List tracked flights."""
-    query = select(Flight).where(Flight.is_active == True)
-    
+    query = select(Flight).where(Flight.is_active)
+
     if origin:
         query = query.where(Flight.origin.ilike(f"%{origin.upper()}%"))
     if destination:
         query = query.where(Flight.destination.ilike(f"%{destination.upper()}%"))
-    
+
     query = query.order_by(Flight.departure_date.asc())
-    
+
     pagination = PaginationParams(page=page, size=size)
     result = await paginate_query(db, query, pagination, FlightResponse)
-    
+
     return FlightListResponse(**result.model_dump())
 
 
 @router.post("/hotels", response_model=HotelResponse, status_code=201)
 async def create_hotel(
-    hotel_data: HotelCreate, 
+    hotel_data: HotelCreate,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Add hotel to track."""
     travel_service = TravelService(db)
-    
+
     try:
         hotel = await travel_service.create_hotel(
             name=hotel_data.name,
@@ -113,19 +111,19 @@ async def list_hotels(
     size: int = Query(20, ge=1, le=100),
     location: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List tracked hotels."""
-    query = select(Hotel).where(Hotel.is_active == True)
-    
+    query = select(Hotel).where(Hotel.is_active)
+
     if location:
         query = query.where(Hotel.location.ilike(f"%{location}%"))
-    
+
     query = query.order_by(Hotel.check_in.asc())
-    
+
     pagination = PaginationParams(page=page, size=size)
     result = await paginate_query(db, query, pagination, HotelResponse)
-    
+
     return HotelListResponse(**result.model_dump())
 
 
@@ -135,48 +133,48 @@ async def list_deals(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List active travel deals."""
     deal_service = TravelDealService(db)
     deals = await deal_service.get_active_deals()
-    
+
     # Simple pagination for deals
     start = (page - 1) * size
     end = start + size
     paginated_deals = deals[start:end]
-    
+
     return TravelDealListResponse(
         items=[TravelDealResponse.model_validate(deal) for deal in paginated_deals],
         total=len(deals),
         page=page,
         size=size,
-        pages=(len(deals) + size - 1) // size
+        pages=(len(deals) + size - 1) // size,
     )
 
 
 @router.get("/deals/{deal_id}", response_model=TravelDealResponse)
 async def get_deal(
-    deal_id: int, 
+    deal_id: int,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Get deal details."""
     deal_service = TravelDealService(db)
     deal = await deal_service.get_deal_by_id(deal_id)
-    
+
     if not deal:
         raise HTTPException(status_code=404, detail="Deal not found")
-    
+
     return TravelDealResponse.model_validate(deal)
 
 
 # Alert Endpoints
 @router.post("/alerts/rules", response_model=TravelAlertRuleResponse, status_code=201)
 async def create_alert_rule(
-    alert_data: TravelAlertRuleCreate, 
+    alert_data: TravelAlertRuleCreate,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Create travel alert rule."""
     alert_rule = TravelAlertRule(
@@ -187,11 +185,11 @@ async def create_alert_rule(
         percentage_threshold=alert_data.percentage_threshold,
         notification_method=alert_data.notification_method,
     )
-    
+
     db.add(alert_rule)
     await db.commit()
     await db.refresh(alert_rule)
-    
+
     return TravelAlertRuleResponse.model_validate(alert_rule)
 
 
@@ -200,13 +198,13 @@ async def list_alerts(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List travel alerts."""
-    query = select(TravelAlertRule).where(TravelAlertRule.is_active == True)
+    query = select(TravelAlertRule).where(TravelAlertRule.is_active)
     query = query.order_by(TravelAlertRule.created_at.desc())
-    
+
     pagination = PaginationParams(page=page, size=size)
     result = await paginate_query(db, query, pagination, TravelAlertRuleResponse)
-    
+
     return TravelAlertListResponse(**result.model_dump())

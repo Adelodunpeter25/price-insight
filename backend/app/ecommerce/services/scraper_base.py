@@ -86,7 +86,7 @@ class BaseScraper(ABC):
                     if normalized_price:
                         data["price"] = float(normalized_price)
                         data["currency"] = "NGN"
-                
+
                 logger.info(f"Successfully scraped data from {url}")
                 return data
             else:

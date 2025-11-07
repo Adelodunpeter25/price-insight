@@ -59,6 +59,7 @@ class TestProductService(unittest.TestCase):
 
     async def test_add_price_history(self):
         """Test adding price history entry."""
+
         # Mock refresh to set ID
         async def mock_refresh(price_entry):
             price_entry.id = 1

@@ -2,7 +2,7 @@
 
 import time
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 from loguru import logger
 
@@ -94,7 +94,12 @@ class MonitoringService:
             "api_metrics": self.metrics["api_requests"],
             "performance_metrics": {
                 "avg_response_time_ms": (
-                    round(sum(self.metrics["response_times"]) / len(self.metrics["response_times"]) * 1000, 2)
+                    round(
+                        sum(self.metrics["response_times"])
+                        / len(self.metrics["response_times"])
+                        * 1000,
+                        2,
+                    )
                     if self.metrics["response_times"]
                     else 0
                 ),
@@ -109,7 +114,7 @@ class MonitoringService:
     def log_performance_summary(self):
         """Log performance summary."""
         health = self.get_health_status()
-        logger.info(f"📊 Performance Summary:")
+        logger.info("📊 Performance Summary:")
         logger.info(f"   Status: {health['status']}")
         logger.info(f"   Uptime: {health['uptime_seconds']:.0f}s")
         logger.info(f"   Scraping Success Rate: {health['scraping_success_rate']}%")

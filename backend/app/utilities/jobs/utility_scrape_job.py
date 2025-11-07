@@ -6,8 +6,8 @@ from loguru import logger
 
 from app.core.database import AsyncSessionLocal
 from app.utilities.models import UtilityService
-from app.utilities.services.utility_service import UtilityServiceManager
 from app.utilities.services.scrapers.utility_scraper import UtilityScraper
+from app.utilities.services.utility_service import UtilityServiceManager
 
 
 async def scrape_tracked_utilities():

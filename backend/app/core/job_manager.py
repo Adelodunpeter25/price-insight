@@ -1,14 +1,15 @@
 """Job manager for registering and managing scheduled jobs."""
 
-from apscheduler.triggers.interval import IntervalTrigger
 import logging
+
+from apscheduler.triggers.interval import IntervalTrigger
 
 logger = logging.getLogger(__name__)
 
 from app.core.scheduler import scheduler_manager
 from app.ecommerce.jobs.scrape_job import scrape_tracked_products
-from app.travel.jobs.travel_scrape_job import scrape_travel_prices
 from app.real_estate.jobs.property_scrape_job import scrape_tracked_properties
+from app.travel.jobs.travel_scrape_job import scrape_travel_prices
 from app.utilities.jobs.utility_scrape_job import scrape_tracked_utilities
 
 

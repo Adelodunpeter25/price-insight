@@ -5,8 +5,6 @@ Revises: 8495efcc0d86, add_user_auth
 Create Date: 2025-11-07 12:46:21.827977
 
 """
-from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.

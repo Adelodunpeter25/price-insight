@@ -1,7 +1,5 @@
 """Hotel model for travel price tracking."""
 
-from datetime import date
-from decimal import Decimal
 
 from sqlalchemy import Column, Date, Integer, Numeric, String, Text
 

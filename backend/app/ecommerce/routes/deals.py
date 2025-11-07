@@ -7,9 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.alerts.rules_engine import AlertRulesEngine
-from app.core.deps import get_database_session, get_current_user
-from app.core.models.user import User
+from app.core.deps import get_current_user, get_database_session
 from app.core.models.alert import AlertHistory, AlertRule
+from app.core.models.user import User
 from app.ecommerce.models import Deal, Product
 from app.ecommerce.schemas.deal import (
     AlertHistoryResponse,
@@ -36,7 +36,7 @@ async def list_deals(
     ),
     active_only: bool = Query(True, description="Show only active deals"),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List deals with pagination and filters."""
 
@@ -44,11 +44,11 @@ async def list_deals(
     query = (
         select(Deal, Product.name, Product.url, Product.site)
         .join(Product, Deal.product_id == Product.id)
-        .where(Product.is_active == True)
+        .where(Product.is_active)
     )
 
     if active_only:
-        query = query.where(Deal.is_active == True)
+        query = query.where(Deal.is_active)
     if site:
         query = query.where(Product.site.ilike(f"%{site}%"))
     if min_discount:
@@ -75,13 +75,13 @@ async def list_deals(
 
 @router.get("/deals/{deal_id}", response_model=DealResponse)
 async def get_deal(
-    deal_id: int, 
+    deal_id: int,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Get deal details."""
 
-    query = select(Deal).where(Deal.id == deal_id, Deal.is_active == True)
+    query = select(Deal).where(Deal.id == deal_id, Deal.is_active)
     result = await db.execute(query)
     deal = result.scalar_one_or_none()
 
@@ -98,7 +98,7 @@ async def list_alerts(
     product_id: Optional[int] = Query(None, description="Filter by product ID"),
     rule_type: Optional[str] = Query(None, description="Filter by rule type"),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List alert history with pagination and filters."""
 
@@ -107,7 +107,7 @@ async def list_alerts(
         select(AlertHistory, Product.name, AlertRule.rule_type)
         .join(Product, AlertHistory.product_id == Product.id)
         .join(AlertRule, AlertHistory.alert_rule_id == AlertRule.id)
-        .where(Product.is_active == True)
+        .where(Product.is_active)
     )
 
     if product_id:
@@ -134,14 +134,16 @@ async def list_alerts(
 
 @router.post("/alerts/rules", response_model=AlertRuleResponse, status_code=201)
 async def create_alert_rule(
-    rule_data: AlertRuleCreate, 
+    rule_data: AlertRuleCreate,
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Create a new alert rule."""
 
     # Validate product exists
-    product_query = select(Product).where(Product.id == rule_data.product_id, Product.is_active == True)
+    product_query = select(Product).where(
+        Product.id == rule_data.product_id, Product.is_active
+    )
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
@@ -170,11 +172,11 @@ async def create_alert_rule(
 async def list_alert_rules(
     product_id: Optional[int] = Query(None, description="Filter by product ID"),
     db: AsyncSession = Depends(get_database_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """List alert rules."""
 
-    query = select(AlertRule).where(AlertRule.is_active == True)
+    query = select(AlertRule).where(AlertRule.is_active)
 
     if product_id:
         query = query.where(AlertRule.product_id == product_id)

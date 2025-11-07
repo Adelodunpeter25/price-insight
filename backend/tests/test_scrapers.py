@@ -2,7 +2,7 @@
 
 import unittest
 from decimal import Decimal
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 from app.ecommerce.services.scraper_base import BaseScraper
 from app.ecommerce.services.scrapers.amazon import AmazonScraper
@@ -11,14 +11,14 @@ from app.ecommerce.services.scrapers.generic import GenericScraper
 
 class TestScraper(BaseScraper):
     """Test implementation of BaseScraper."""
-    
+
     def extract_data(self, soup, url: str) -> dict:
         """Test implementation of extract_data."""
         return {
             "name": "Test Product",
             "price": Decimal("19.99"),
             "availability": "In Stock",
-            "currency": "USD"
+            "currency": "USD",
         }
 
 

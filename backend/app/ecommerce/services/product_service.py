@@ -58,7 +58,7 @@ class ProductService:
             naira_price = await currency_converter.convert_to_naira(price, currency)
             price = naira_price
             currency = "NGN"
-            
+
         price_entry = PriceHistory(
             product_id=product_id, price=price, currency=currency, availability=availability
         )
