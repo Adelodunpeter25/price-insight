@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import { ProtectedRoute, Spinner, ErrorBoundary } from './components';
+import ScrollToTop from './components/ScrollToTop';
 
 // Public pages
 import { Home, About, Contact, FAQ, Privacy, Terms } from './pages/public';
@@ -24,6 +25,7 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <Router>
+            <ScrollToTop />
             <div className="min-h-screen bg-gray-900">
               <Routes>
                 {/* Public Routes */}
