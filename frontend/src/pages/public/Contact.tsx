@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -69,7 +69,7 @@ export default function Contact() {
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <EnvelopeIcon className="h-6 w-6 text-blue-400 mt-1" />
+                  <Mail className="h-6 w-6 text-blue-400 mt-1" />
                   <div>
                     <h3 className="text-lg font-medium text-white">Email</h3>
                     <p className="text-gray-300">support@priceinsight.com</p>
@@ -77,7 +77,7 @@ export default function Contact() {
                 </div>
                 
                 <div className="flex items-start space-x-4">
-                  <PhoneIcon className="h-6 w-6 text-blue-400 mt-1" />
+                  <Phone className="h-6 w-6 text-blue-400 mt-1" />
                   <div>
                     <h3 className="text-lg font-medium text-white">Phone</h3>
                     <p className="text-gray-300">+234 (0) 123 456 7890</p>
@@ -85,7 +85,7 @@ export default function Contact() {
                 </div>
                 
                 <div className="flex items-start space-x-4">
-                  <MapPinIcon className="h-6 w-6 text-blue-400 mt-1" />
+                  <MapPin className="h-6 w-6 text-blue-400 mt-1" />
                   <div>
                     <h3 className="text-lg font-medium text-white">Address</h3>
                     <p className="text-gray-300">

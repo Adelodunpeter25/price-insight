@@ -2,42 +2,42 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  TrendingDownIcon, 
-  BellIcon, 
-  ChartBarIcon,
-  ShieldCheckIcon,
-  GlobeAltIcon,
-  CurrencyDollarIcon
-} from '@heroicons/react/24/outline';
+  TrendingDown, 
+  Bell, 
+  BarChart3,
+  Shield,
+  Globe,
+  DollarSign
+} from 'lucide-react';
 
 const features = [
   {
-    icon: TrendingDownIcon,
+    icon: TrendingDown,
     title: 'Price Tracking',
     description: 'Monitor prices across multiple categories and get notified of drops'
   },
   {
-    icon: BellIcon,
+    icon: Bell,
     title: 'Smart Alerts',
     description: 'Receive instant notifications when prices hit your target'
   },
   {
-    icon: ChartBarIcon,
+    icon: BarChart3,
     title: 'Price History',
     description: 'View detailed price trends and make informed decisions'
   },
   {
-    icon: ShieldCheckIcon,
+    icon: Shield,
     title: 'Secure & Reliable',
     description: 'Your data is protected with enterprise-grade security'
   },
   {
-    icon: GlobeAltIcon,
+    icon: Globe,
     title: 'Multi-Category',
     description: 'Track e-commerce, travel, real estate, and utility prices'
   },
   {
-    icon: CurrencyDollarIcon,
+    icon: DollarSign,
     title: 'Currency Normalized',
     description: 'All prices converted to Nigerian Naira for easy comparison'
   }

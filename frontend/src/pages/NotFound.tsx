@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Home, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/common/Button';
 
-export const NotFound = () => {
+const NotFound = () => {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <motion.div
@@ -50,3 +50,5 @@ export const NotFound = () => {
     </div>
   );
 };
+
+export default NotFound;

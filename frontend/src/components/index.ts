@@ -1,6 +1,5 @@
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as ErrorBoundary } from './ErrorBoundary';
-export { default as ErrorBoundary } from './ErrorBoundary';
 
 // Re-export from subdirectories
 export * from './common';

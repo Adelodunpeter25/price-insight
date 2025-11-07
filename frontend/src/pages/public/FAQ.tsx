@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronDown } from 'lucide-react';
 
 const faqs = [
   {
@@ -100,7 +100,7 @@ export default function FAQ() {
                   <h3 className="text-lg font-semibold text-white pr-4">
                     {faq.question}
                   </h3>
-                  <ChevronDownIcon 
+                  <ChevronDown 
                     className={`h-5 w-5 text-gray-400 transition-transform ${
                       openIndex === index ? 'rotate-180' : ''
                     }`}
