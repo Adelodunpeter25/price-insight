@@ -27,6 +27,7 @@ dependencies = [
     "pyjwt>=2.10.1",
     "email-validator>=2.3.0",
     "reportlab>=4.4.4",
+    "jinja2>=3.1.6",
 ]
 
 [project.optional-dependencies]
@@ -59,3 +60,13 @@ python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "black>=25.9.0",
+    "flake8>=7.3.0",
+    "isort>=7.0.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.14.3",
+]

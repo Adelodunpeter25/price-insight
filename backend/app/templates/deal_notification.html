@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Deal Alert</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+        .deal-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 2px solid #dc3545; }
+        .deal-badge { background: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; display: inline-block; margin-bottom: 10px; }
+        .price { color: #dc3545; font-weight: bold; font-size: 1.3em; }
+        .footer { text-align: center; margin-top: 30px; color: #6c757d; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Hot Deal Alert!</h1>
+        </div>
+        <div class="content">
+            <h2>{{ item_name }}</h2>
+            <p>We found an amazing deal that matches your preferences!</p>
+            
+            <div class="deal-box">
+                <div class="deal-badge">{{ deal_type }}</div>
+                <h3>{{ item_name }}</h3>
+                <p><strong>Category:</strong> {{ category }}</p>
+                <p><strong>Price:</strong> <span class="price">{{ currency }}{{ price }}</span></p>
+                {% if discount_percent %}
+                <p><strong>Discount:</strong> {{ discount_percent }}% off</p>
+                {% endif %}
+                <p><strong>Provider:</strong> {{ provider }}</p>
+            </div>
+            
+            <p>This deal won't last long. Check it out now!</p>
+        </div>
+        <div class="footer">
+            <p>Price Insight - Your Deal Hunter</p>
+            <p>You're receiving this because you have active deal alerts.</p>
+        </div>
+    </div>
+</body>
+</html>
