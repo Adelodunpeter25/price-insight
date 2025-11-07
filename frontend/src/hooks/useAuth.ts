@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { User, LoginPayload, SignupPayload } from '../types';
 import { authService } from '../services/authService';
+import { useAuthStore } from '../store/authStore';
 
 interface UseAuthReturn {
   user: User | null;
@@ -8,13 +9,13 @@ interface UseAuthReturn {
   error: string | null;
   login: (payload: LoginPayload) => Promise<void>;
   signup: (payload: SignupPayload) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   refreshToken: () => Promise<boolean>;
 }
 
 export const useAuth = (): UseAuthReturn => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, isAuthenticated, setUser, clearAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,10 +31,10 @@ export const useAuth = (): UseAuthReturn => {
     } catch {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      setUser(null);
+      clearAuth();
       return false;
     }
-  }, []);
+  }, [clearAuth]);
 
   const login = useCallback(async (payload: LoginPayload) => {
     setIsLoading(true);
@@ -44,15 +45,15 @@ export const useAuth = (): UseAuthReturn => {
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
       
-      const user = await authService.getCurrentUser();
-      setUser(user);
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setUser]);
 
   const signup = useCallback(async (payload: SignupPayload) => {
     setIsLoading(true);
@@ -63,20 +64,20 @@ export const useAuth = (): UseAuthReturn => {
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
       
-      const user = await authService.getCurrentUser();
-      setUser(user);
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Signup failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setUser]);
 
   const logout = useCallback(async () => {
     await authService.logout();
-    setUser(null);
-  }, []);
+    clearAuth();
+  }, [clearAuth]);
 
   // Auto-login on mount
   useEffect(() => {
@@ -88,15 +89,15 @@ export const useAuth = (): UseAuthReturn => {
       }
 
       try {
-        const user = await authService.getCurrentUser();
-        setUser(user);
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
       } catch {
         // Try refresh token
         const refreshed = await refreshToken();
         if (refreshed) {
           try {
-            const user = await authService.getCurrentUser();
-            setUser(user);
+            const userData = await authService.getCurrentUser();
+            setUser(userData);
           } catch {
             await logout();
           }
@@ -107,7 +108,7 @@ export const useAuth = (): UseAuthReturn => {
     };
 
     initAuth();
-  }, [refreshToken, logout]);
+  }, [refreshToken, logout, setUser]);
 
   return {
     user,
@@ -116,7 +117,7 @@ export const useAuth = (): UseAuthReturn => {
     login,
     signup,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated,
     refreshToken
   };
 };
