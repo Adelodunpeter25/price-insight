@@ -79,7 +79,7 @@ export function PublicHeader() {
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-out ${
+          <div className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 shadow-2xl z-50 md:hidden transform transition-all duration-500 ease-in-out ${
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}>
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -130,7 +130,7 @@ export function PublicHeader() {
               <div className="mt-8 pt-6 border-t border-gray-700 space-y-3">
                 <Link 
                   to="/login" 
-                  className="block w-full text-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                  className="block w-full text-center bg-gray-700 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Login

@@ -74,7 +74,7 @@ export default function Home() {
               className="inline-flex items-center px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium mb-8"
             >
               <span className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></span>
-              Smart Deal Detection & Price Alerts
+              Multi-Category Price Intelligence
             </motion.div>
             
             {/* Main heading */}
