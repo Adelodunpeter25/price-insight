@@ -73,15 +73,15 @@ export function PublicHeader() {
       </div>
 
       {/* Mobile Sidebar */}
-      {isMobileMenuOpen && (
-        <>
-          <div 
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 shadow-2xl z-50 md:hidden transform transition-all duration-500 ease-in-out ${
-            isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}>
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-500 ${
+          isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+      <div className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 shadow-2xl z-50 md:hidden transform transition-transform duration-500 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
@@ -145,8 +145,6 @@ export function PublicHeader() {
               </div>
             </div>
           </div>
-        </>
-      )}
     </nav>
   );
 }

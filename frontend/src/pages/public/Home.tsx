@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -7,7 +7,8 @@ import {
   BarChart3,
   Shield,
   Globe,
-  DollarSign
+  DollarSign,
+  ChevronDown
 } from 'lucide-react';
 import { PublicHeader, PublicFooter } from '../../components/layout';
 
@@ -43,6 +44,58 @@ const features = [
     description: 'All prices converted to Nigerian Naira for easy comparison'
   }
 ];
+
+const faqData = [
+  {
+    question: "Is Price Insight free to use?",
+    answer: "Yes! Price Insight offers a free tier with basic price tracking and alerts. Premium plans are available for advanced features."
+  },
+  {
+    question: "How accurate are the price alerts?",
+    answer: "Our system checks prices multiple times per day with high accuracy. We recommend verifying prices on the retailer's website before purchasing."
+  },
+  {
+    question: "What categories can I track?",
+    answer: "You can track prices across e-commerce products, travel bookings, real estate properties, and utility services."
+  },
+  {
+    question: "How do I set up price alerts?",
+    answer: "Simply add a product URL, set your desired price threshold, and we'll notify you via email when the price drops."
+  }
+];
+
+function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <div className="space-y-4">
+      {faqData.map((faq, index) => (
+        <div key={index} className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl overflow-hidden">
+          <button
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-700/30 transition-colors"
+          >
+            <h3 className="text-lg font-semibold text-white">
+              {faq.question}
+            </h3>
+            <ChevronDown 
+              className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+                openIndex === index ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+          {openIndex === index && (
+            <div className="px-6 pb-6">
+              <p className="text-gray-300">
+                {faq.answer}
+              </p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -196,50 +249,14 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Is Price Insight free to use?
-              </h3>
-              <p className="text-gray-300">
-                Yes! Price Insight offers a free tier with basic price tracking and alerts. Premium plans are available for advanced features.
-              </p>
-            </div>
-            
-            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                How accurate are the price alerts?
-              </h3>
-              <p className="text-gray-300">
-                Our system checks prices multiple times per day with high accuracy. We recommend verifying prices on the retailer's website before purchasing.
-              </p>
-            </div>
-            
-            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                What categories can I track?
-              </h3>
-              <p className="text-gray-300">
-                You can track prices across e-commerce products, travel bookings, real estate properties, and utility services.
-              </p>
-            </div>
-            
-            <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                How do I set up price alerts?
-              </h3>
-              <p className="text-gray-300">
-                Simply add a product URL, set your desired price threshold, and we'll notify you via email when the price drops.
-              </p>
-            </div>
-          </div>
+          <FAQAccordion />
           
           <div className="text-center mt-8">
             <Link 
               to="/faq"
-              className="text-blue-400 hover:text-blue-300 font-semibold"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25 inline-block"
             >
-              View All FAQs →
+              View All FAQs
             </Link>
           </div>
         </div>
