@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { Alert, AlertFilter, PaginatedResponse } from '../types';
-import { apiClient } from '../services/api';
+import type { Alert } from '../types';
+import { alertService } from '../services/alertService';
 
 interface UseAlertsReturn {
   alerts: Alert[];
@@ -22,8 +22,8 @@ export const useAlerts = (): UseAlertsReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<PaginatedResponse<Alert>>('/alerts');
-      setAlerts(response.data.items);
+      const response = await alertService.getAlerts();
+      setAlerts(response.items);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch alerts');
     } finally {
@@ -33,7 +33,7 @@ export const useAlerts = (): UseAlertsReturn => {
 
   const markAsRead = useCallback(async (id: number): Promise<void> => {
     try {
-      await apiClient.post(`/alerts/${id}/mark-read`);
+      await alertService.markAsRead(id);
       setAlerts(prev => prev.map(alert => 
         alert.id === id ? { ...alert, is_read: true } : alert
       ));
@@ -45,7 +45,7 @@ export const useAlerts = (): UseAlertsReturn => {
 
   const dismissAlert = useCallback(async (id: number): Promise<void> => {
     try {
-      await apiClient.delete(`/alerts/${id}`);
+      await alertService.dismissAlert(id);
       setAlerts(prev => prev.filter(alert => alert.id !== id));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to dismiss alert');
@@ -55,7 +55,7 @@ export const useAlerts = (): UseAlertsReturn => {
 
   const markAllAsRead = useCallback(async (): Promise<void> => {
     try {
-      await apiClient.post('/alerts/mark-all-read');
+      await alertService.markAllAsRead();
       setAlerts(prev => prev.map(alert => ({ ...alert, is_read: true })));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to mark all alerts as read');

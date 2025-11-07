@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { Deal, DealFilter, PaginatedResponse } from '../types';
-import { apiClient } from '../services/api';
+import type { Deal, DealFilter } from '../types';
+import { dealService } from '../services/dealService';
 
 interface UseDealsReturn {
   deals: Deal[];
@@ -21,13 +21,8 @@ export const useDeals = (): UseDealsReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (filter.status) params.append('status', filter.status);
-      if (filter.site) params.append('site', filter.site);
-      if (filter.deal_type) params.append('deal_type', filter.deal_type);
-
-      const response = await apiClient.get<PaginatedResponse<Deal>>(`/ecommerce/deals?${params}`);
-      setDeals(response.data.items);
+      const response = await dealService.getDeals(filter);
+      setDeals(response.items);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch deals');
     } finally {

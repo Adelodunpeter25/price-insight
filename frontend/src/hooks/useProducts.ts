@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Product, PriceHistory, CreateProductPayload, PaginatedResponse } from '../types';
-import { apiClient } from '../services/api';
+import type { Product, PriceHistory, CreateProductPayload } from '../types';
+import { productService } from '../services/productService';
 
 interface UseProductsReturn {
   products: Product[];
@@ -22,8 +22,8 @@ export const useProducts = (): UseProductsReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<PaginatedResponse<Product>>('/ecommerce/products');
-      setProducts(response.data.items);
+      const response = await productService.getProducts();
+      setProducts(response.items);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch products');
     } finally {
@@ -33,9 +33,9 @@ export const useProducts = (): UseProductsReturn => {
 
   const addProduct = useCallback(async (payload: CreateProductPayload): Promise<Product> => {
     try {
-      const response = await apiClient.post<Product>('/ecommerce/products', payload);
-      setProducts(prev => [response.data, ...prev]);
-      return response.data;
+      const product = await productService.addProduct(payload);
+      setProducts(prev => [product, ...prev]);
+      return product;
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to add product';
       setError(errorMsg);
@@ -45,7 +45,7 @@ export const useProducts = (): UseProductsReturn => {
 
   const removeProduct = useCallback(async (id: number): Promise<void> => {
     try {
-      await apiClient.delete(`/ecommerce/products/${id}`);
+      await productService.removeProduct(id);
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to remove product';
@@ -56,8 +56,7 @@ export const useProducts = (): UseProductsReturn => {
 
   const getProductDetail = useCallback(async (id: number): Promise<Product> => {
     try {
-      const response = await apiClient.get<Product>(`/ecommerce/products/${id}`);
-      return response.data;
+      return await productService.getProduct(id);
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to fetch product';
       setError(errorMsg);
@@ -67,8 +66,7 @@ export const useProducts = (): UseProductsReturn => {
 
   const getPriceHistory = useCallback(async (id: number): Promise<PriceHistory[]> => {
     try {
-      const response = await apiClient.get<PriceHistory[]>(`/ecommerce/products/${id}/price-history`);
-      return response.data;
+      return await productService.getPriceHistory(id);
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to fetch price history';
       setError(errorMsg);

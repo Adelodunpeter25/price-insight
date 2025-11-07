@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { User, LoginPayload, SignupPayload, AuthResponse } from '../types';
-import { apiClient } from '../services/api';
+import type { User, LoginPayload, SignupPayload } from '../types';
+import { authService } from '../services/authService';
 
 interface UseAuthReturn {
   user: User | null;
@@ -20,15 +20,12 @@ export const useAuth = (): UseAuthReturn => {
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
-      const refreshToken = localStorage.getItem('refresh_token');
-      if (!refreshToken) return false;
+      const refreshTokenValue = localStorage.getItem('refresh_token');
+      if (!refreshTokenValue) return false;
 
-      const response = await apiClient.post<AuthResponse>('/auth/refresh', {
-        refresh_token: refreshToken
-      });
-
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
+      const response = await authService.refreshToken(refreshTokenValue);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
       return true;
     } catch {
       localStorage.removeItem('access_token');
@@ -42,13 +39,13 @@ export const useAuth = (): UseAuthReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.post<AuthResponse>('/auth/login', payload);
+      const response = await authService.login(payload);
       
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
       
-      const userResponse = await apiClient.get<User>('/auth/me');
-      setUser(userResponse.data);
+      const user = await authService.getCurrentUser();
+      setUser(user);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed');
       throw err;
@@ -61,19 +58,23 @@ export const useAuth = (): UseAuthReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      await apiClient.post('/auth/register', payload);
-      await login({ email: payload.email, password: payload.password });
+      const response = await authService.signup(payload);
+      
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
+      
+      const user = await authService.getCurrentUser();
+      setUser(user);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Signup failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [login]);
+  }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+  const logout = useCallback(async () => {
+    await authService.logout();
     setUser(null);
   }, []);
 
@@ -87,17 +88,17 @@ export const useAuth = (): UseAuthReturn => {
       }
 
       try {
-        const response = await apiClient.get<User>('/auth/me');
-        setUser(response.data);
+        const user = await authService.getCurrentUser();
+        setUser(user);
       } catch {
         // Try refresh token
         const refreshed = await refreshToken();
         if (refreshed) {
           try {
-            const response = await apiClient.get<User>('/auth/me');
-            setUser(response.data);
+            const user = await authService.getCurrentUser();
+            setUser(user);
           } catch {
-            logout();
+            await logout();
           }
         }
       } finally {
