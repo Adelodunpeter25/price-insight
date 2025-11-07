@@ -7,7 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.alerts.rules_engine import AlertRulesEngine
-from app.core.deps import get_database_session
+from app.core.deps import get_database_session, get_current_user
+from app.core.models.user import User
 from app.core.models.alert import AlertHistory, AlertRule
 from app.ecommerce.models import Deal, Product
 from app.ecommerce.schemas.deal import (
@@ -35,6 +36,7 @@ async def list_deals(
     ),
     active_only: bool = Query(True, description="Show only active deals"),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List deals with pagination and filters."""
 
@@ -72,7 +74,11 @@ async def list_deals(
 
 
 @router.get("/deals/{deal_id}", response_model=DealResponse)
-async def get_deal(deal_id: int, db: AsyncSession = Depends(get_database_session)):
+async def get_deal(
+    deal_id: int, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
+):
     """Get deal details."""
 
     query = select(Deal).where(Deal.id == deal_id, Deal.is_active == True)
@@ -92,6 +98,7 @@ async def list_alerts(
     product_id: Optional[int] = Query(None, description="Filter by product ID"),
     rule_type: Optional[str] = Query(None, description="Filter by rule type"),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List alert history with pagination and filters."""
 
@@ -127,7 +134,9 @@ async def list_alerts(
 
 @router.post("/alerts/rules", response_model=AlertRuleResponse, status_code=201)
 async def create_alert_rule(
-    rule_data: AlertRuleCreate, db: AsyncSession = Depends(get_database_session)
+    rule_data: AlertRuleCreate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new alert rule."""
 
@@ -161,6 +170,7 @@ async def create_alert_rule(
 async def list_alert_rules(
     product_id: Optional[int] = Query(None, description="Filter by product ID"),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List alert rules."""
 

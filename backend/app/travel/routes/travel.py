@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_database_session
+from app.core.deps import get_database_session, get_current_user
+from app.core.models.user import User
 from app.travel.models import Flight, Hotel
 from app.travel.models.deal import TravelDeal
 from app.travel.models.travel_alert import TravelAlertRule
@@ -33,7 +34,9 @@ router = APIRouter(prefix="/api/travel", tags=["Travel"])
 
 @router.post("/flights", response_model=FlightResponse, status_code=201)
 async def create_flight(
-    flight_data: FlightCreate, db: AsyncSession = Depends(get_database_session)
+    flight_data: FlightCreate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Add flight to track."""
     travel_service = TravelService(db)
@@ -61,6 +64,7 @@ async def list_flights(
     origin: Optional[str] = Query(None),
     destination: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List tracked flights."""
     query = select(Flight).where(Flight.is_active == True)
@@ -80,7 +84,9 @@ async def list_flights(
 
 @router.post("/hotels", response_model=HotelResponse, status_code=201)
 async def create_hotel(
-    hotel_data: HotelCreate, db: AsyncSession = Depends(get_database_session)
+    hotel_data: HotelCreate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Add hotel to track."""
     travel_service = TravelService(db)
@@ -107,6 +113,7 @@ async def list_hotels(
     size: int = Query(20, ge=1, le=100),
     location: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List tracked hotels."""
     query = select(Hotel).where(Hotel.is_active == True)
@@ -128,6 +135,7 @@ async def list_deals(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List active travel deals."""
     deal_service = TravelDealService(db)
@@ -149,7 +157,9 @@ async def list_deals(
 
 @router.get("/deals/{deal_id}", response_model=TravelDealResponse)
 async def get_deal(
-    deal_id: int, db: AsyncSession = Depends(get_database_session)
+    deal_id: int, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Get deal details."""
     deal_service = TravelDealService(db)
@@ -164,7 +174,9 @@ async def get_deal(
 # Alert Endpoints
 @router.post("/alerts/rules", response_model=TravelAlertRuleResponse, status_code=201)
 async def create_alert_rule(
-    alert_data: TravelAlertRuleCreate, db: AsyncSession = Depends(get_database_session)
+    alert_data: TravelAlertRuleCreate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Create travel alert rule."""
     alert_rule = TravelAlertRule(
@@ -188,6 +200,7 @@ async def list_alerts(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List travel alerts."""
     query = select(TravelAlertRule).where(TravelAlertRule.is_active == True)

@@ -12,10 +12,15 @@ class Settings(BaseSettings):
     version: str = "0.1.0"
 
     # Database
-    database_url: str = "postgresql+asyncpg://user:password@localhost/price_insight"
+    database_url: str = ""
 
     # Redis
-    redis_url: str = "redis://localhost:6379"
+    redis_url: str = ""
+    
+    # JWT
+    secret_key: str = ""
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 30
 
     class Config:
         env_file = ".env"

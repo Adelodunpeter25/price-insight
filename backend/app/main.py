@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.database import engine
 from app.core.job_manager import job_manager
 from app.core.logging import setup_logging
+from app.core.routes.auth import router as auth_router
 from app.core.routes.health import router as health_router
 from app.core.routes.monitoring import router as monitoring_router
 from app.core.routes.status import router as status_router
@@ -50,6 +51,7 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(status_router)
 app.include_router(monitoring_router)

@@ -7,7 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import get_database_session
+from app.core.deps import get_database_session, get_current_user
+from app.core.models.user import User
 from app.ecommerce.models import Product
 from app.ecommerce.schemas.product import (
     ProductCreate,
@@ -24,7 +25,9 @@ router = APIRouter(prefix="/api/e-commerce/products", tags=["E-commerce Products
 
 @router.post("/", response_model=ProductResponse, status_code=201)
 async def create_product(
-    product_data: ProductCreate, db: AsyncSession = Depends(get_database_session)
+    product_data: ProductCreate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Add a new product to track."""
 
@@ -51,6 +54,7 @@ async def list_products(
     category: Optional[str] = Query(None, description="Filter by category"),
     is_tracked: Optional[bool] = Query(None, description="Filter by tracking status"),
     db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """List tracked products with pagination and filters."""
 
@@ -75,7 +79,11 @@ async def list_products(
 
 
 @router.get("/{product_id}", response_model=ProductDetailResponse)
-async def get_product(product_id: int, db: AsyncSession = Depends(get_database_session)):
+async def get_product(
+    product_id: int, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
+):
     """Get product details with price history."""
 
     query = (
@@ -95,7 +103,10 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_database_s
 
 @router.patch("/{product_id}", response_model=ProductResponse)
 async def update_product(
-    product_id: int, product_data: ProductUpdate, db: AsyncSession = Depends(get_database_session)
+    product_id: int, 
+    product_data: ProductUpdate, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
 ):
     """Update product information."""
 
@@ -119,7 +130,11 @@ async def update_product(
 
 
 @router.delete("/{product_id}", status_code=204)
-async def delete_product(product_id: int, db: AsyncSession = Depends(get_database_session)):
+async def delete_product(
+    product_id: int, 
+    db: AsyncSession = Depends(get_database_session),
+    current_user: User = Depends(get_current_user)
+):
     """Stop tracking a product (soft delete)."""
 
     # Get product
