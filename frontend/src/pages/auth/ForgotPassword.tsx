@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft } from 'lucide-react';
-import { useToast } from '../../hooks/useToast';
+import toast from 'react-hot-toast';
 import { AuthLayout } from '../../components/layout/AuthLayout';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
@@ -11,7 +11,7 @@ export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { success: showSuccess, error: showError } = useToast();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +21,9 @@ export const ForgotPassword = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsSubmitted(true);
-      showSuccess('Password reset instructions sent to your email');
+      toast.success('Password reset instructions sent to your email');
     } catch (err) {
-      showError('Failed to send reset instructions');
+      toast.error('Failed to send reset instructions');
     } finally {
       setIsLoading(false);
     }

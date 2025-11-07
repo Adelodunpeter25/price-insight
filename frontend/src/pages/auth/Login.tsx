@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
-import { useToast } from '../../hooks/useToast';
+import toast from 'react-hot-toast';
 import { AuthLayout } from '../../components/layout/AuthLayout';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
@@ -13,7 +13,7 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthContext();
-  const { error: showError } = useToast();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export const Login = () => {
     try {
       await login({ email, password });
     } catch (err: any) {
-      showError(err.message || 'Login failed');
+      toast.error(err.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }

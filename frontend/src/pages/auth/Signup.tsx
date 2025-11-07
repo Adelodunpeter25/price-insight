@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthContext';
-import { useToast } from '../../hooks/useToast';
+import toast from 'react-hot-toast';
 import { AuthLayout } from '../../components/layout/AuthLayout';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
@@ -17,7 +17,7 @@ export const Signup = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { signup } = useAuthContext();
-  const { error: showError, success: showSuccess } = useToast();
+
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -40,9 +40,9 @@ export const Signup = () => {
 
     try {
       await signup({ email, password, full_name: fullName || undefined });
-      showSuccess('Account created successfully!');
+      toast.success('Account created successfully!');
     } catch (err: any) {
-      showError(err.message || 'Signup failed');
+      toast.error(err.message || 'Signup failed');
     } finally {
       setIsLoading(false);
     }
