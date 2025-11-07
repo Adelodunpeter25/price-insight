@@ -10,7 +10,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useDeals } from '../hooks/useDeals';
 import { useAlerts } from '../hooks/useAlerts';
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const { products } = useProducts();
   const { deals } = useDeals();
   const { alerts, unreadCount } = useAlerts();
@@ -120,3 +120,5 @@ export const Dashboard = () => {
     </DashboardLayout>
   );
 };
+
+export default Dashboard;

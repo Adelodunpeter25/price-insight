@@ -7,7 +7,7 @@ import { Button } from '../components/common/Button';
 import { useDeals } from '../hooks/useDeals';
 import type { DealFilter } from '../types';
 
-export const Deals = () => {
+const Deals = () => {
   const { deals, isLoading, filteredDeals, setFilter } = useDeals();
   const [filters, setFilters] = useState<DealFilter>({});
 
@@ -81,3 +81,5 @@ export const Deals = () => {
     </DashboardLayout>
   );
 };
+
+export default Deals;

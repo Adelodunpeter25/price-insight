@@ -7,7 +7,7 @@ import { Skeleton } from '../components/common/Skeleton';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useProducts } from '../hooks/useProducts';
 
-export const Products = () => {
+const Products = () => {
   const { products, isLoading, removeProduct } = useProducts();
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [searchQuery, setSearchQuery] = useState('');
@@ -145,3 +145,5 @@ export const Products = () => {
     </DashboardLayout>
   );
 };
+
+export default Products;

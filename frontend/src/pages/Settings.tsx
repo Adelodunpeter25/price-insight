@@ -7,7 +7,7 @@ import { Button } from '../components/common/Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useToast } from '../hooks/useToast';
 
-export const Settings = () => {
+const Settings = () => {
   const { user } = useAuthContext();
   const { success: showSuccess } = useToast();
   const [activeTab, setActiveTab] = useState('account');
@@ -229,3 +229,5 @@ export const Settings = () => {
     </DashboardLayout>
   );
 };
+
+export default Settings;

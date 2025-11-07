@@ -7,7 +7,7 @@ import { Button } from '../components/common/Button';
 import { useAlerts } from '../hooks/useAlerts';
 import type { AlertFilter } from '../types';
 
-export const Alerts = () => {
+const Alerts = () => {
   const { 
     alerts, 
     isLoading, 
@@ -103,3 +103,5 @@ export const Alerts = () => {
     </DashboardLayout>
   );
 };
+
+export default Alerts;
