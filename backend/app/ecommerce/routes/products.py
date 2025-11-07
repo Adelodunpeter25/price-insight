@@ -19,7 +19,7 @@ from app.ecommerce.schemas.product import (
 from app.ecommerce.services.product_service import ProductService
 from app.utils.pagination import PaginationParams, paginate_query
 
-router = APIRouter(prefix="/api/products", tags=["Products"])
+router = APIRouter(prefix="/api/e-commerce/products", tags=["E-commerce Products"])
 
 
 @router.post("/", response_model=ProductResponse, status_code=201)

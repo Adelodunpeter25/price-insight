@@ -38,7 +38,7 @@ class TestIntegration(BaseTestCase):
             "category": "electronics",
         }
 
-        response = self.client.post("/api/products/", json=product_data)
+        response = self.client.post("/api/e-commerce/products/", json=product_data)
         self.assertEqual(response.status_code, 201)
         data = response.json()
         self.assertEqual(data["name"], "Test Product")
@@ -46,7 +46,7 @@ class TestIntegration(BaseTestCase):
 
     def test_list_products_endpoint(self):
         """Test product listing endpoint."""
-        response = self.client.get("/api/products/")
+        response = self.client.get("/api/e-commerce/products/")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("items", data)
@@ -55,7 +55,7 @@ class TestIntegration(BaseTestCase):
 
     def test_list_deals_endpoint(self):
         """Test deals listing endpoint."""
-        response = self.client.get("/api/deals")
+        response = self.client.get("/api/e-commerce/deals")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("items", data)
@@ -63,7 +63,7 @@ class TestIntegration(BaseTestCase):
 
     def test_list_alerts_endpoint(self):
         """Test alerts listing endpoint."""
-        response = self.client.get("/api/alerts")
+        response = self.client.get("/api/e-commerce/alerts")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("items", data)
@@ -78,7 +78,7 @@ class TestIntegration(BaseTestCase):
             "notification_method": "console",
         }
 
-        response = self.client.post("/api/alerts/rules", json=rule_data)
+        response = self.client.post("/api/e-commerce/alerts/rules", json=rule_data)
         self.assertEqual(response.status_code, 404)
 
     @patch("app.ecommerce.services.scrapers.amazon.AmazonScraper.scrape")
@@ -115,28 +115,28 @@ class TestAPIValidation(BaseTestCase):
             "site": "example.com",
         }
 
-        response = self.client.post("/api/products/", json=product_data)
+        response = self.client.post("/api/e-commerce/products/", json=product_data)
         self.assertEqual(response.status_code, 422)  # Validation error
 
     def test_create_product_missing_fields(self):
         """Test product creation with missing required fields."""
         product_data = {"name": "Test Product"}  # Missing url and site
 
-        response = self.client.post("/api/products/", json=product_data)
+        response = self.client.post("/api/e-commerce/products/", json=product_data)
         self.assertEqual(response.status_code, 422)
 
     def test_pagination_parameters(self):
         """Test pagination parameter validation."""
         # Test invalid page number
-        response = self.client.get("/api/products/?page=0")
+        response = self.client.get("/api/e-commerce/products/?page=0")
         self.assertEqual(response.status_code, 422)
 
         # Test invalid page size
-        response = self.client.get("/api/products/?size=1000")
+        response = self.client.get("/api/e-commerce/products/?size=1000")
         self.assertEqual(response.status_code, 422)
 
         # Test valid parameters
-        response = self.client.get("/api/products/?page=1&size=10")
+        response = self.client.get("/api/e-commerce/products/?page=1&size=10")
         self.assertEqual(response.status_code, 200)
 
 

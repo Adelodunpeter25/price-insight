@@ -22,7 +22,7 @@ from app.ecommerce.schemas.deal import (
 )
 from app.utils.pagination import PaginationParams, paginate_joined_query
 
-router = APIRouter(prefix="/api", tags=["Deals & Alerts"])
+router = APIRouter(prefix="/api/e-commerce", tags=["E-commerce Deals & Alerts"])
 
 
 @router.get("/deals", response_model=DealListResponse)
