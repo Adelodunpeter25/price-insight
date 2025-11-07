@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { PublicHeader } from '../../components/layout';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -34,20 +35,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Navigation */}
-      <nav className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-xl font-bold text-white">Price Insight</Link>
-            <div className="flex items-center space-x-4">
-              <Link to="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-              <Link to="/about" className="text-gray-300 hover:text-white transition-colors">About</Link>
-              <Link to="/login" className="text-gray-300 hover:text-white transition-colors">Login</Link>
-              <Link to="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Sign Up</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PublicHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
