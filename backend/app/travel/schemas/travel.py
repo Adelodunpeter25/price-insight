@@ -9,6 +9,76 @@ from pydantic import BaseModel, Field, HttpUrl
 from app.utils.pagination import PaginatedResponse
 
 
+# Deal Schemas
+class TravelDealCreate(BaseModel):
+    """Schema for creating travel deal."""
+    flight_id: Optional[int] = None
+    hotel_id: Optional[int] = None
+    discount_percent: Optional[float] = None
+    original_price: Optional[float] = None
+    deal_price: float
+    deal_start_date: Optional[datetime] = None
+    deal_end_date: Optional[datetime] = None
+    deal_source: str = "manual"
+    deal_description: Optional[str] = None
+
+
+class TravelDealResponse(BaseModel):
+    """Schema for travel deal response."""
+    id: int
+    flight_id: Optional[int] = None
+    hotel_id: Optional[int] = None
+    discount_percent: Optional[float] = None
+    original_price: Optional[float] = None
+    deal_price: float
+    deal_start_date: Optional[datetime] = None
+    deal_end_date: Optional[datetime] = None
+    deal_source: str
+    deal_description: Optional[str] = None
+    created_at: datetime
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class TravelDealListResponse(PaginatedResponse):
+    """Schema for paginated travel deal list."""
+    items: List[TravelDealResponse]
+
+
+# Alert Schemas
+class TravelAlertRuleCreate(BaseModel):
+    """Schema for creating travel alert rule."""
+    flight_id: Optional[int] = None
+    hotel_id: Optional[int] = None
+    rule_type: str  # price_drop, threshold, deal
+    threshold_value: Optional[float] = None
+    percentage_threshold: Optional[float] = None
+    notification_method: str = "console"
+
+
+class TravelAlertRuleResponse(BaseModel):
+    """Schema for travel alert rule response."""
+    id: int
+    flight_id: Optional[int] = None
+    hotel_id: Optional[int] = None
+    rule_type: str
+    threshold_value: Optional[float] = None
+    percentage_threshold: Optional[float] = None
+    notification_method: str
+    created_at: datetime
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class TravelAlertListResponse(PaginatedResponse):
+    """Schema for paginated travel alert list."""
+    items: List[TravelAlertRuleResponse]
+
+
 class FlightCreate(BaseModel):
     """Schema for creating flight tracking."""
 
