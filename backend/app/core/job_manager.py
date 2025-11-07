@@ -9,6 +9,7 @@ from app.core.scheduler import scheduler_manager
 from app.ecommerce.jobs.scrape_job import scrape_tracked_products
 from app.travel.jobs.travel_scrape_job import scrape_travel_prices
 from app.real_estate.jobs.property_scrape_job import scrape_tracked_properties
+from app.utilities.jobs.utility_scrape_job import scrape_tracked_utilities
 
 
 class JobManager:
@@ -62,6 +63,17 @@ class JobManager:
         )
         self.registered_jobs["scrape_properties"] = property_job
         logger.info("Registered property scraping job (every 8 hours)")
+
+        # Utilities scraping job - every 12 hours
+        utility_job = scheduler_manager.add_job(
+            func=scrape_tracked_utilities,
+            trigger=IntervalTrigger(hours=12),
+            id="scrape_utilities",
+            name="Scrape Utility Prices",
+            replace_existing=True,
+        )
+        self.registered_jobs["scrape_utilities"] = utility_job
+        logger.info("Registered utility scraping job (every 12 hours)")
 
     def get_job_status(self):
         """Get status of all registered jobs."""

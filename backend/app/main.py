@@ -18,6 +18,7 @@ from app.ecommerce.routes.deals import router as deals_router
 from app.ecommerce.routes.products import router as products_router
 from app.travel.routes.travel import router as travel_router
 from app.real_estate.routes import alerts_router, deals_router as re_deals_router, properties_router
+from app.utilities.routes import alerts_router as util_alerts_router, deals_router as util_deals_router, services_router
 
 
 @asynccontextmanager
@@ -62,3 +63,6 @@ app.include_router(travel_router)
 app.include_router(properties_router)
 app.include_router(re_deals_router)
 app.include_router(alerts_router)
+app.include_router(services_router)
+app.include_router(util_deals_router)
+app.include_router(util_alerts_router)
