@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Package, Tag, Bell, TrendingDown, Plus } from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { StatCard } from '../components/dashboard/StatCard';
+import { AddProductModal } from '../components/products/AddProductModal';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { useProducts } from '../hooks/useProducts';
@@ -12,6 +14,7 @@ export const Dashboard = () => {
   const { products } = useProducts();
   const { deals } = useDeals();
   const { alerts, unreadCount } = useAlerts();
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const stats = [
     {
@@ -48,7 +51,7 @@ export const Dashboard = () => {
             <h1 className="text-2xl font-bold text-white">Dashboard</h1>
             <p className="text-zinc-400 mt-1">Welcome back! Here's your price tracking overview.</p>
           </div>
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => setShowAddModal(true)}>
             <Plus size={16} className="mr-2" />
             Add Product
           </Button>
@@ -107,6 +110,12 @@ export const Dashboard = () => {
             </div>
           </Card>
         </div>
+
+        {/* Modals */}
+        <AddProductModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+        />
       </div>
     </DashboardLayout>
   );

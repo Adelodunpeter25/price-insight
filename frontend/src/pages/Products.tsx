@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Plus, Grid, List } from 'lucide-react';
+import { Plus, Grid, List, Package } from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { ProductTable, ProductCard, ProductFilters } from '../components/products';
+import { ProductTable, ProductCard, ProductFilters, AddProductModal } from '../components/products';
 import { Button } from '../components/common/Button';
 import { Skeleton } from '../components/common/Skeleton';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { useProducts } from '../hooks/useProducts';
 
 export const Products = () => {
@@ -12,6 +13,8 @@ export const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSite, setSelectedSite] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<{ show: boolean; productId?: number; productName?: string }>({ show: false });
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -24,9 +27,19 @@ export const Products = () => {
     console.log('View product:', id);
   };
 
-  const handleRemove = async (id: number) => {
-    if (confirm('Are you sure you want to remove this product?')) {
-      await removeProduct(id);
+  const handleRemove = (id: number) => {
+    const product = products.find(p => p.id === id);
+    setConfirmDelete({ 
+      show: true, 
+      productId: id, 
+      productName: product?.name 
+    });
+  };
+
+  const confirmRemove = async () => {
+    if (confirmDelete.productId) {
+      await removeProduct(confirmDelete.productId);
+      setConfirmDelete({ show: false });
     }
   };
 
@@ -56,7 +69,7 @@ export const Products = () => {
                 <Grid size={16} />
               </Button>
             </div>
-            <Button variant="primary">
+            <Button variant="primary" onClick={() => setShowAddModal(true)}>
               <Plus size={16} className="mr-2" />
               Add Product
             </Button>
@@ -87,7 +100,7 @@ export const Products = () => {
             <p className="text-zinc-400 mb-4">
               {searchQuery || selectedSite ? 'Try adjusting your filters' : 'Start by adding your first product'}
             </p>
-            <Button variant="primary">
+            <Button variant="primary" onClick={() => setShowAddModal(true)}>
               <Plus size={16} className="mr-2" />
               Add Product
             </Button>
@@ -112,6 +125,22 @@ export const Products = () => {
             ))}
           </div>
         )}
+
+        {/* Modals */}
+        <AddProductModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+        />
+
+        <ConfirmDialog
+          isOpen={confirmDelete.show}
+          onClose={() => setConfirmDelete({ show: false })}
+          onConfirm={confirmRemove}
+          title="Remove Product"
+          message={`Are you sure you want to remove "${confirmDelete.productName}"? This action cannot be undone.`}
+          confirmText="Remove"
+          variant="danger"
+        />
       </div>
     </DashboardLayout>
   );

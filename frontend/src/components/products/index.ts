@@ -2,3 +2,4 @@
 export { ProductCard } from './ProductCard';
 export { ProductTable } from './ProductTable';
 export { ProductFilters } from './ProductFilters';
+export { AddProductModal } from './AddProductModal';

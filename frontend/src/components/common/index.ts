@@ -6,5 +6,6 @@ export { Badge } from './Badge';
 export { Modal } from './Modal';
 export { Skeleton } from './Skeleton';
 export { Toast, ToastContainer } from './Toast';
+export { ConfirmDialog } from './ConfirmDialog';
 export { Navbar } from './Navbar';
 export { Sidebar } from './Sidebar';
