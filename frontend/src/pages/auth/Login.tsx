@@ -22,7 +22,19 @@ export const Login = () => {
     try {
       await login({ email, password });
     } catch (err: any) {
-      toast.error(err.message || 'Login failed');
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err.response?.status === 401) {
+        errorMessage = 'Invalid email or password';
+      } else if (err.response?.status === 422) {
+        errorMessage = 'Please check your email and password';
+      } else if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -42,7 +42,19 @@ export const Signup = () => {
       await signup({ email, password, full_name: fullName || undefined });
       toast.success('Account created successfully!');
     } catch (err: any) {
-      toast.error(err.message || 'Signup failed');
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (err.response?.status === 422) {
+        errorMessage = 'Please check your information and try again';
+      } else if (err.response?.status === 409) {
+        errorMessage = 'An account with this email already exists';
+      } else if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
