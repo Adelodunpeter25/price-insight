@@ -99,8 +99,16 @@ export const useAuth = (): UseAuthReturn => {
             const userData = await authService.getCurrentUser();
             setUser(userData);
           } catch {
-            await logout();
+            // Don't call logout here as it might cause redirect
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            clearAuth();
           }
+        } else {
+          // Clear auth silently without logout
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          clearAuth();
         }
       } finally {
         setIsLoading(false);
@@ -108,7 +116,7 @@ export const useAuth = (): UseAuthReturn => {
     };
 
     initAuth();
-  }, [refreshToken, logout, setUser]);
+  }, [refreshToken, setUser, clearAuth]);
 
   return {
     user,

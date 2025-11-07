@@ -46,12 +46,12 @@ apiClient.interceptors.response.use(
         } catch (refreshError) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
-          window.location.href = '/login';
+          // Don't redirect, let components handle auth state
         }
       } else {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        // Don't redirect, let components handle auth state
       }
     }
     
