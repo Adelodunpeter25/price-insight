@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
+  
+  html {
+    @apply dark;
+  }
+  
+  body {
+    @apply bg-black text-white min-h-screen;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 shadow-xl;
+  }
+  
+  .glass-button {
+    @apply bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/50 hover:bg-zinc-700/50 transition-all duration-200;
+  }
+}
+
+@layer utilities {
+  .animate-stagger {
+    animation-delay: calc(var(--stagger) * 100ms);
+  }
+}
