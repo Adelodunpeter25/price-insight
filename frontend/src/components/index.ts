@@ -1,5 +1,4 @@
-import ProtectedRoute from './ProtectedRoute';
-export { ProtectedRoute };
+export { ProtectedRoute } from './ProtectedRoute';
 import ErrorBoundary from './ErrorBoundary';
 export { ErrorBoundary };
 
