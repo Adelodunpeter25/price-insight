@@ -8,6 +8,7 @@ import httpx
 from bs4 import BeautifulSoup
 from loguru import logger
 
+from app.utils.currency import currency_converter
 from app.utils.helpers import validate_url
 
 
@@ -79,6 +80,13 @@ class BaseScraper(ABC):
         try:
             data = await self.extract_data(url)
             if data and self.validate_data(data):
+                # Normalize price to Naira
+                if "price" in data and data["price"]:
+                    normalized_price = await currency_converter.normalize_price(str(data["price"]))
+                    if normalized_price:
+                        data["price"] = float(normalized_price)
+                        data["currency"] = "NGN"
+                
                 logger.info(f"Successfully scraped data from {url}")
                 return data
             else:

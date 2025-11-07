@@ -4,6 +4,7 @@ from decimal import Decimal
 from typing import Dict, Optional
 
 from app.ecommerce.services.scraper_base import BaseScraper
+from app.utils.currency import currency_converter
 
 
 class FlightScraper(BaseScraper):
@@ -32,7 +33,7 @@ class FlightScraper(BaseScraper):
             return {
                 "price": price,
                 "airline": airline,
-                "currency": "USD",
+                "currency": "NGN",  # Will be normalized by base scraper
                 "site": self._get_site_name(url),
                 "url": url
             }

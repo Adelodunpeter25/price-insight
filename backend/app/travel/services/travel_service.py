@@ -40,7 +40,7 @@ class TravelService:
             url=str(url),
             site=site,
             price=0.0,  # Will be updated by scraper
-            currency="USD",
+            currency="NGN",  # All prices normalized to Naira
         )
         
         self.db.add(flight)
@@ -73,7 +73,7 @@ class TravelService:
             site=site,
             price_per_night=0.0,  # Will be updated by scraper
             total_price=0.0,
-            currency="USD",
+            currency="NGN",  # All prices normalized to Naira
         )
         
         self.db.add(hotel)

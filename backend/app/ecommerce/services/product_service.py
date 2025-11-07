@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.ecommerce.models import Deal, PriceHistory, Product
+from app.utils.currency import currency_converter
 from app.utils.helpers import calculate_discount_percentage, is_valid_deal
 
 
@@ -48,10 +49,16 @@ class ProductService:
         self,
         product_id: int,
         price: Decimal,
-        currency: str = "USD",
+        currency: str = "NGN",
         availability: Optional[str] = None,
     ) -> PriceHistory:
         """Add price history entry."""
+        # Ensure price is in Naira
+        if currency != "NGN":
+            naira_price = await currency_converter.convert_to_naira(price, currency)
+            price = naira_price
+            currency = "NGN"
+            
         price_entry = PriceHistory(
             product_id=product_id, price=price, currency=currency, availability=availability
         )
@@ -59,7 +66,7 @@ class ProductService:
         await self.db.commit()
         await self.db.refresh(price_entry)
 
-        logger.info(f"Added price history: Product {product_id} - ${price}")
+        logger.info(f"Added price history: Product {product_id} - ₦{price}")
         return price_entry
 
     async def get_products_to_track(self) -> List[Product]:

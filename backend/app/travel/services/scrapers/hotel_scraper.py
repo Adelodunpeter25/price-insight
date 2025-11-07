@@ -4,6 +4,7 @@ from decimal import Decimal
 from typing import Dict, Optional
 
 from app.ecommerce.services.scraper_base import BaseScraper
+from app.utils.currency import currency_converter
 
 
 class HotelScraper(BaseScraper):
@@ -33,7 +34,7 @@ class HotelScraper(BaseScraper):
                 "price_per_night": price_per_night,
                 "total_price": price_per_night,  # Will be calculated based on nights
                 "rating": rating,
-                "currency": "USD",
+                "currency": "NGN",  # Will be normalized by base scraper
                 "site": self._get_site_name(url),
                 "url": url
             }
