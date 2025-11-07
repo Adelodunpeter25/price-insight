@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     
     # Exchange Rate API
     exchange_rate_api_key: str = ""
+    
+    # Email service (Resend)
+    resend_api_key: str = ""
+    from_email: str = "noreply@priceinsight.ng"
 
     class Config:
         env_file = ".env"

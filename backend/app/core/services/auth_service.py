@@ -7,7 +7,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models.user import User
-from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token
+from app.core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+)
 
 
 class AuthService:
@@ -25,21 +30,16 @@ class AuthService:
         query = select(User).where(User.email == email)
         result = await self.db.execute(query)
         existing_user = result.scalar_one_or_none()
-        
+
         if existing_user:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
             )
-        
+
         # Create user
         hashed_pwd = hash_password(password)
-        user = User(
-            email=email,
-            hashed_password=hashed_pwd,
-            full_name=full_name
-        )
-        
+        user = User(email=email, hashed_password=hashed_pwd, full_name=full_name)
+
         self.db.add(user)
         await self.db.commit()
         await self.db.refresh(user)
@@ -50,10 +50,10 @@ class AuthService:
         query = select(User).where(User.email == email)
         result = await self.db.execute(query)
         user = result.scalar_one_or_none()
-        
+
         if not user or not verify_password(password, user.hashed_password):
             return None
-        
+
         return user
 
     async def get_user_by_email(self, email: str) -> Optional[User]:
@@ -67,7 +67,4 @@ class AuthService:
         token_data = {"sub": user.email, "user_id": user.id}
         access_token = create_access_token(token_data)
         refresh_token = create_refresh_token(token_data)
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        }
+        return {"access_token": access_token, "refresh_token": refresh_token}
