@@ -20,20 +20,17 @@ const Dashboard = () => {
     {
       title: 'Total Products',
       value: products.length,
-      icon: <Package size={24} />,
-      trend: { value: 12, isPositive: true }
+      icon: <Package size={24} />
     },
     {
       title: 'Active Deals',
       value: deals.filter(d => d.is_active).length,
-      icon: <Tag size={24} />,
-      trend: { value: 8, isPositive: true }
+      icon: <Tag size={24} />
     },
     {
       title: 'Price Drops (Week)',
-      value: 5,
-      icon: <TrendingDown size={24} />,
-      trend: { value: 25, isPositive: true }
+      value: alerts.filter(a => a.message.toLowerCase().includes('price drop')).length,
+      icon: <TrendingDown size={24} />
     },
     {
       title: 'Unread Alerts',
