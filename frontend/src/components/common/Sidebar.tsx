@@ -62,8 +62,8 @@ export const Sidebar = () => {
           </button>
         </div>
 
-        <nav className="p-6 flex-1 overflow-hidden">
-          <div className="space-y-1 h-full overflow-y-auto">
+        <nav className="p-6">
+          <div className="space-y-1">
             {navigation.map((item, index) => (
               <NavLink
                 key={item.name}
