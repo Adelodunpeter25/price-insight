@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, ChevronDown } from 'lucide-react';
+import { useAuthContext } from '../../context/AuthContext';
 
 export function PublicHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuthContext();
 
   return (
     <nav className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
@@ -46,20 +49,57 @@ export function PublicHeader() {
             </Link>
           </div>
           
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              to="/login" 
-              className="text-gray-300 hover:text-white transition-colors"
-            >
-              Login
-            </Link>
-            <Link 
-              to="/signup" 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Sign Up
-            </Link>
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                    <User size={16} />
+                  </div>
+                  <span className="text-sm">{user?.full_name || user?.email}</span>
+                  <ChevronDown size={16} />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2">
+                    <Link
+                      to="/dashboard"
+                      className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -128,20 +168,43 @@ export function PublicHeader() {
                 </Link>
               </nav>
               <div className="mt-8 pt-6 border-t border-gray-700 space-y-3">
-                <Link 
-                  to="/login" 
-                  className="block w-full text-center bg-gray-700 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link 
-                  to="/signup" 
-                  className="block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link 
+                      to="/dashboard" 
+                      className="block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="block w-full text-center bg-gray-700 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      to="/login" 
+                      className="block w-full text-center bg-gray-700 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link 
+                      to="/signup" 
+                      className="block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

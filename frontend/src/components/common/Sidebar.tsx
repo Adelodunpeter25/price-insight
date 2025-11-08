@@ -12,7 +12,7 @@ import { useUIStore } from '../../store/uiStore';
 import { Badge } from './Badge';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Products', href: '/products', icon: Package, badge: '12' },
   { name: 'Deals', href: '/deals', icon: Tag, badge: '5' },
   { name: 'Alerts', href: '/alerts', icon: Bell, badge: '3' },
@@ -34,7 +34,7 @@ export const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out overflow-hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
