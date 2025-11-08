@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { Badge } from './Badge';
+import '../../styles/sidebar.css';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -34,10 +35,9 @@ export const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out overflow-hidden ${
+        className={`sidebar-no-scroll fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
-        style={{ overflowY: 'hidden' }}
       >
         {/* Logo for desktop */}
         <div className="hidden lg:flex items-center p-6 border-b border-gray-700">
@@ -63,8 +63,8 @@ export const Sidebar = () => {
           </button>
         </div>
 
-        <nav className="p-6">
-          <div className="space-y-1">
+        <nav className="p-6 overflow-hidden">
+          <div className="space-y-1 overflow-hidden">
             {navigation.map((item, index) => (
               <NavLink
                 key={item.name}

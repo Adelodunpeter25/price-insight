@@ -1,0 +1,9 @@
+.sidebar-no-scroll {
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
+
+.sidebar-no-scroll * {
+  overflow: hidden !important;
+}
