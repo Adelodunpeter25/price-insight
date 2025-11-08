@@ -38,6 +38,15 @@ export const Sidebar = () => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
+        {/* Logo for desktop */}
+        <div className="hidden lg:flex items-center p-6 border-b border-gray-700">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+            <span className="text-white font-bold text-lg">P</span>
+          </div>
+          <span className="text-white font-bold text-lg">Price Insight</span>
+        </div>
+        
+        {/* Mobile header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700 lg:hidden">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">

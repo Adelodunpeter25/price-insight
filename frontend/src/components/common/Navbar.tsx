@@ -24,15 +24,6 @@ export const Navbar = () => {
           >
             <Menu size={20} />
           </button>
-          
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
-            <span className="text-white font-semibold text-lg hidden sm:block">
-              Price Insight
-            </span>
-          </div>
         </div>
 
         <div className="flex items-center space-x-3">
