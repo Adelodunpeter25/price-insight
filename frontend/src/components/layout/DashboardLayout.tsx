@@ -44,7 +44,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Sidebar />
         
         {/* Main content */}
-        <div className="flex-1">
+        <div className="flex-1 lg:ml-64">
           <Navbar />
           
           <main className="p-4 lg:p-6 max-w-7xl mx-auto">

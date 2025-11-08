@@ -20,7 +20,7 @@ export const Navbar = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleSidebar}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
+            className="p-2 text-gray-400 hover:text-white transition-colors lg:hidden"
           >
             <Menu size={20} />
           </button>
