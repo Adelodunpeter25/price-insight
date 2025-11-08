@@ -13,24 +13,24 @@ export const alertService = {
     if (filters?.date_to) params.append('date_to', filters.date_to);
     if (filters?.is_read !== undefined) params.append('is_read', filters.is_read.toString());
 
-    const response = await apiClient.get<PaginatedResponse<Alert>>(`/alerts/?${params}`);
+    const response = await apiClient.get<PaginatedResponse<Alert>>(`/e-commerce/alerts?${params}`);
     return response.data;
   },
 
   async markAsRead(id: number): Promise<void> {
-    await apiClient.post(`/alerts/${id}/mark-read/`);
+    await apiClient.post(`/e-commerce/alerts/${id}/mark-read/`);
   },
 
   async dismissAlert(id: number): Promise<void> {
-    await apiClient.delete(`/alerts/${id}/`);
+    await apiClient.delete(`/e-commerce/alerts/${id}/`);
   },
 
   async markAllAsRead(): Promise<void> {
-    await apiClient.post('/alerts/mark-all-read/');
+    await apiClient.post('/e-commerce/alerts/mark-all-read/');
   },
 
   async getUnreadCount(): Promise<number> {
-    const response = await apiClient.get<{ count: number }>('/alerts/unread-count/');
+    const response = await apiClient.get<{ count: number }>('/e-commerce/alerts/unread-count/');
     return response.data.count;
   }
 };
