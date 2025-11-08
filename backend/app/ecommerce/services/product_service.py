@@ -71,7 +71,7 @@ class ProductService:
 
     async def get_products_to_track(self) -> List[Product]:
         """Get all products that should be tracked."""
-        stmt = select(Product).where(Product.is_tracked, Product.is_active)
+        stmt = select(Product).where(Product.is_tracked == True, Product.is_active == True)
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
 

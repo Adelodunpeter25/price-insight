@@ -18,7 +18,7 @@ async def export_products_csv(
     current_user: User = Depends(get_current_user),
 ):
     """Export products to CSV."""
-    query = select(Product).where(Product.is_active)
+    query = select(Product).where(Product.is_active == True)
     result = await db.execute(query)
     products = result.scalars().all()
 
@@ -38,7 +38,7 @@ async def export_products_pdf(
     current_user: User = Depends(get_current_user),
 ):
     """Export products to PDF."""
-    query = select(Product).where(Product.is_active)
+    query = select(Product).where(Product.is_active == True)
     result = await db.execute(query)
     products = result.scalars().all()
 

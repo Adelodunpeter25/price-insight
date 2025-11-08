@@ -25,7 +25,7 @@ class AlertRulesEngine:
         """Evaluate all alert rules for a price change."""
 
         # Get all active alert rules for this product
-        stmt = select(AlertRule).where(AlertRule.product_id == product_id, AlertRule.is_active)
+        stmt = select(AlertRule).where(AlertRule.product_id == product_id, AlertRule.is_active == True)
         result = await self.db.execute(stmt)
         alert_rules = list(result.scalars().all())
 

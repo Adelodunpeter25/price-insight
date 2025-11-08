@@ -48,7 +48,7 @@ async def list_deals(
     )
 
     if active_only:
-        query = query.where(Deal.is_active)
+        query = query.where(Deal.is_active == True)
     if site:
         query = query.where(Product.site.ilike(f"%{site}%"))
     if min_discount:
