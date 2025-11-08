@@ -13,9 +13,9 @@ import { Badge } from './Badge';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Products', href: '/products', icon: Package, badge: '12' },
-  { name: 'Deals', href: '/deals', icon: Tag, badge: '5' },
-  { name: 'Alerts', href: '/alerts', icon: Bell, badge: '3' },
+  { name: 'Products', href: '/products', icon: Package },
+  { name: 'Deals', href: '/deals', icon: Tag },
+  { name: 'Alerts', href: '/alerts', icon: Bell },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -62,8 +62,8 @@ export const Sidebar = () => {
           </button>
         </div>
 
-        <nav className="p-6">
-          <div className="space-y-1">
+        <nav className="p-6 flex-1 overflow-hidden">
+          <div className="space-y-1 h-full overflow-y-auto">
             {navigation.map((item, index) => (
               <NavLink
                 key={item.name}

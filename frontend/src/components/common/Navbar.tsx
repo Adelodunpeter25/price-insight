@@ -34,18 +34,9 @@ export const Navbar = () => {
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          <div className="relative">
-            <button className="p-2 text-gray-400 hover:text-white transition-colors">
-              <Bell size={20} />
-            </button>
-            <Badge 
-              variant="danger" 
-              size="sm" 
-              className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center"
-            >
-              3
-            </Badge>
-          </div>
+          <button className="p-2 text-gray-400 hover:text-white transition-colors">
+            <Bell size={20} />
+          </button>
 
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
