@@ -16,8 +16,9 @@ def setup_logging() -> None:
     )
     
     # Disable SQLAlchemy verbose logging
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.WARNING)
-    logging.getLogger('sqlalchemy.pool').setLevel(logging.WARNING)
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.ERROR)
+    logging.getLogger('sqlalchemy.pool').setLevel(logging.ERROR)
+    logging.getLogger('sqlalchemy').setLevel(logging.ERROR)
 
 
 def log_event(event: str, data: Dict[str, Any] = None) -> None:
