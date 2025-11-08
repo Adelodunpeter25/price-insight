@@ -44,7 +44,7 @@ async def list_deals(
     query = (
         select(Deal, Product.name, Product.url, Product.site)
         .join(Product, Deal.product_id == Product.id)
-        .where(Product.is_active)
+        .where(Product.is_active == True)
     )
 
     if active_only:
@@ -81,7 +81,7 @@ async def get_deal(
 ):
     """Get deal details."""
 
-    query = select(Deal).where(Deal.id == deal_id, Deal.is_active)
+    query = select(Deal).where(Deal.id == deal_id, Deal.is_active == True)
     result = await db.execute(query)
     deal = result.scalar_one_or_none()
 
@@ -107,7 +107,7 @@ async def list_alerts(
         select(AlertHistory, Product.name, AlertRule.rule_type)
         .join(Product, AlertHistory.product_id == Product.id)
         .join(AlertRule, AlertHistory.alert_rule_id == AlertRule.id)
-        .where(Product.is_active)
+        .where(Product.is_active == True)
     )
 
     if product_id:
@@ -142,7 +142,7 @@ async def create_alert_rule(
 
     # Validate product exists
     product_query = select(Product).where(
-        Product.id == rule_data.product_id, Product.is_active
+        Product.id == rule_data.product_id, Product.is_active == True
     )
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
@@ -176,7 +176,7 @@ async def list_alert_rules(
 ):
     """List alert rules."""
 
-    query = select(AlertRule).where(AlertRule.is_active)
+    query = select(AlertRule).where(AlertRule.is_active == True)
 
     if product_id:
         query = query.where(AlertRule.product_id == product_id)
