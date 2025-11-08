@@ -37,6 +37,7 @@ export const Sidebar = () => {
         className={`fixed top-0 left-0 z-50 h-screen w-64 bg-gray-900 shadow-2xl lg:static lg:z-auto transform transition-transform duration-300 ease-in-out overflow-hidden ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
+        style={{ overflowY: 'hidden' }}
       >
         {/* Logo for desktop */}
         <div className="hidden lg:flex items-center p-6 border-b border-gray-700">

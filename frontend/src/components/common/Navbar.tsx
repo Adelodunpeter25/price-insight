@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Menu, Bell, Sun, Moon, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
@@ -10,7 +11,8 @@ export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuthContext();
   const { toggleSidebar } = useUIStore();
-  const { unreadCount } = useAlerts();
+  const { alerts, unreadCount } = useAlerts();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <motion.nav
@@ -37,7 +39,10 @@ export const Navbar = () => {
           </button>
 
           <div className="relative">
-            <button className="p-2 text-gray-400 hover:text-white transition-colors">
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 text-gray-400 hover:text-white transition-colors"
+            >
               <Bell size={20} />
             </button>
             {unreadCount > 0 && (
@@ -48,6 +53,37 @@ export const Navbar = () => {
               >
                 {unreadCount}
               </Badge>
+            )}
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-gray-800 rounded-lg shadow-lg border border-gray-700 py-2 max-h-96 overflow-y-auto">
+                <div className="px-4 py-2 border-b border-gray-700">
+                  <h3 className="text-white font-semibold">Notifications</h3>
+                </div>
+                {alerts.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-gray-400">
+                    No notifications
+                  </div>
+                ) : (
+                  alerts.slice(0, 5).map((alert) => (
+                    <div key={alert.id} className="px-4 py-3 hover:bg-gray-700 border-b border-gray-700 last:border-b-0">
+                      <p className="text-white text-sm">{alert.message}</p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        {new Date(alert.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))
+                )}
+                {alerts.length > 0 && (
+                  <div className="px-4 py-2 border-t border-gray-700">
+                    <button 
+                      onClick={() => setShowNotifications(false)}
+                      className="text-blue-400 hover:text-blue-300 text-sm"
+                    >
+                      View all alerts
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
