@@ -82,11 +82,6 @@ export const Sidebar = () => {
                   <item.icon size={18} />
                   <span>{item.name}</span>
                 </div>
-                {item.badge && (
-                  <Badge variant="info" size="sm">
-                    {item.badge}
-                  </Badge>
-                )}
               </NavLink>
             ))}
           </div>
