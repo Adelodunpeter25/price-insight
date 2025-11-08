@@ -111,17 +111,25 @@ const Dashboard = () => {
           <Card>
             <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
             <div className="space-y-3">
-              {alerts.slice(0, 5).map((alert) => (
-                <div key={alert.id} className="flex items-center space-x-3 p-3 bg-zinc-800/30 rounded-lg">
-                  <div className="w-2 h-2 bg-accent rounded-full"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm truncate">{alert.message}</p>
-                    <p className="text-zinc-400 text-xs">
-                      {new Date(alert.created_at).toLocaleDateString()}
-                    </p>
+              {alerts.length > 0 ? (
+                alerts.slice(0, 5).map((alert) => (
+                  <div key={alert.id} className="flex items-center space-x-3 p-3 bg-zinc-800/30 rounded-lg">
+                    <div className="w-2 h-2 bg-accent rounded-full"></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{alert.message}</p>
+                      <p className="text-zinc-400 text-xs">
+                        {new Date(alert.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Bell className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm">No recent activity</p>
+                  <p className="text-gray-500 text-xs">Start tracking items to see alerts here</p>
                 </div>
-              ))}
+              )}
             </div>
           </Card>
 
@@ -129,18 +137,26 @@ const Dashboard = () => {
           <Card>
             <h2 className="text-lg font-semibold text-white mb-4">Top Deals</h2>
             <div className="space-y-3">
-              {deals.slice(0, 5).map((deal) => (
-                <div key={deal.id} className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm truncate">{deal.product?.name}</p>
-                    <p className="text-success text-xs">{deal.discount_percent}% off</p>
+              {deals.length > 0 ? (
+                deals.slice(0, 5).map((deal) => (
+                  <div key={deal.id} className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{deal.product?.name}</p>
+                      <p className="text-success text-xs">{deal.discount_percent}% off</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white font-medium">₦{deal.deal_price.toLocaleString()}</p>
+                      <p className="text-zinc-400 text-xs line-through">₦{deal.original_price.toLocaleString()}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-white font-medium">₦{deal.deal_price.toLocaleString()}</p>
-                    <p className="text-zinc-400 text-xs line-through">₦{deal.original_price.toLocaleString()}</p>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Tag className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm">No deals available</p>
+                  <p className="text-gray-500 text-xs">Deals will appear here when found</p>
                 </div>
-              ))}
+              )}
             </div>
           </Card>
         </div>
