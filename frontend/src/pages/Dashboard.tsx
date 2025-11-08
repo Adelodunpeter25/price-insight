@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Tag, Bell, TrendingDown, Plus } from 'lucide-react';
+import { Package, Tag, Bell, TrendingDown, Plus, Plane, Home, Zap } from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { StatCard } from '../components/dashboard/StatCard';
 import { AddProductModal } from '../components/products/AddProductModal';
@@ -9,34 +9,55 @@ import { Card } from '../components/common/Card';
 import { useProducts } from '../hooks/useProducts';
 import { useDeals } from '../hooks/useDeals';
 import { useAlerts } from '../hooks/useAlerts';
+import { useTravel } from '../hooks/useTravel';
+import { useRealEstate } from '../hooks/useRealEstate';
+import { useUtilities } from '../hooks/useUtilities';
 
 const Dashboard = () => {
   const { products } = useProducts();
   const { deals } = useDeals();
   const { alerts, unreadCount } = useAlerts();
+  const { flights, hotels } = useTravel();
+  const { properties, activeDeals: realEstateDeals } = useRealEstate();
+  const { services, activeDeals: utilityDeals } = useUtilities();
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // Calculate totals across all categories
+  const totalItems = products.length + flights.length + hotels.length + properties.length + services.length;
+  const totalActiveDeals = deals.filter(d => d.is_active).length + realEstateDeals + utilityDeals;
 
   const stats = [
     {
-      title: 'Total Products',
-      value: products.length,
-      icon: <Package size={24} />
+      title: 'Total Items Tracked',
+      value: totalItems,
+      icon: <Package size={24} />,
+      subtitle: `${products.length} Products, ${flights.length + hotels.length} Travel, ${properties.length} Properties, ${services.length} Services`
     },
     {
       title: 'Active Deals',
-      value: deals.filter(d => d.is_active).length,
-      icon: <Tag size={24} />
+      value: totalActiveDeals,
+      icon: <Tag size={24} />,
+      subtitle: 'Across all categories'
     },
     {
       title: 'Price Drops (Week)',
       value: alerts.filter(a => a.message.toLowerCase().includes('price drop')).length,
-      icon: <TrendingDown size={24} />
+      icon: <TrendingDown size={24} />,
+      subtitle: 'All categories'
     },
     {
       title: 'Unread Alerts',
       value: unreadCount,
-      icon: <Bell size={24} />
+      icon: <Bell size={24} />,
+      subtitle: 'All categories'
     }
+  ];
+
+  const categoryStats = [
+    { name: 'E-commerce', count: products.length, icon: <Package size={20} />, color: 'text-blue-400' },
+    { name: 'Travel', count: flights.length + hotels.length, icon: <Plane size={20} />, color: 'text-green-400' },
+    { name: 'Real Estate', count: properties.length, icon: <Home size={20} />, color: 'text-purple-400' },
+    { name: 'Utilities', count: services.length, icon: <Zap size={20} />, color: 'text-yellow-400' }
   ];
 
   return (
@@ -67,6 +88,22 @@ const Dashboard = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Category Breakdown */}
+        <Card>
+          <h2 className="text-lg font-semibold text-white mb-4">Category Breakdown</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categoryStats.map((category) => (
+              <div key={category.name} className="text-center p-4 bg-gray-800/30 rounded-lg">
+                <div className={`flex justify-center mb-2 ${category.color}`}>
+                  {category.icon}
+                </div>
+                <div className="text-2xl font-bold text-white">{category.count}</div>
+                <div className="text-sm text-gray-400">{category.name}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
 
         {/* Recent Activity & Top Deals */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
