@@ -170,6 +170,9 @@ frontend.md
 # Alembic
 alembic.ini
 
+# Frontend folder - excluded for now
+frontend/
+
 # FastAPI specific
 .pytest_cache/
 
