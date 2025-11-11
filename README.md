@@ -32,23 +32,7 @@ make migrate
 make dev
 ```
 
-## API Endpoints
 
-- **Auth**: `/api/auth/register`, `/api/auth/login`
-- **E-commerce**: `/api/ecommerce/products`, `/api/ecommerce/deals`
-- **Travel**: `/api/travel/flights`, `/api/travel/hotels`
-- **Real Estate**: `/api/real_estate/properties`
-- **Utilities**: `/api/utilities/services`
-
-## Environment Variables
-
-```env
-DATABASE_URL=postgresql+asyncpg://user:pass@host/db
-REDIS_URL=redis://localhost:6379
-JWT_SECRET_KEY=your-secret-key
-EXCHANGE_RATE_API_KEY=your-api-key
-RESEND_API_KEY=your-resend-key
-```
 
 ## Commands
 
