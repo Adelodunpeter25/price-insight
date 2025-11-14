@@ -11,6 +11,7 @@ from app.core.deal_detection.base_detector import BaseDealDetector
 from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
 from app.core.models.user import User
+from app.ecommerce.services.price_analytics import PriceAnalytics
 
 logger = logging.getLogger(__name__)
 from app.ecommerce.models.deal import Deal
@@ -45,8 +46,12 @@ class EcommerceDealDetector(BaseDealDetector):
         return item.current_price
 
     def create_deal(self, db: Session, item: Product, deal_data: Dict) -> Optional[Deal]:
-        """Create e-commerce deal record."""
+        """Create e-commerce deal record with enhanced analytics."""
         try:
+            # Get price analytics for better deal description
+            stats = PriceAnalytics.get_price_stats(db, item.id, 30)
+            trend = PriceAnalytics.get_price_trend(db, item.id, 7)
+            
             # Check if deal already exists for this product
             existing_deal = (
                 db.query(Deal).filter(Deal.product_id == item.id, Deal.is_active).first()
@@ -61,11 +66,19 @@ class EcommerceDealDetector(BaseDealDetector):
                 existing_deal.updated_at = datetime.utcnow()
                 return existing_deal
             else:
+                # Enhanced description with analytics
+                description = f"{deal_data['discount_percent']:.1f}% off - Save ₦{deal_data['savings']:.2f}"
+                if stats:
+                    if stats['current_price'] == stats['lowest_price']:
+                        description += " | Lowest price in 30 days!"
+                    elif trend == "falling":
+                        description += " | Price trending down"
+                
                 # Create new deal
                 deal = Deal(
                     product_id=item.id,
                     title=f"Deal: {item.name}",
-                    description=f"{deal_data['discount_percent']:.1f}% off - Save ₦{deal_data['savings']:.2f}",
+                    description=description,
                     original_price=deal_data["original_price"],
                     deal_price=deal_data["current_price"],
                     discount_percent=deal_data["discount_percent"],
@@ -77,7 +90,7 @@ class EcommerceDealDetector(BaseDealDetector):
                 db.flush()
                 
                 # Send email notification
-                await self._send_deal_notification(db, item, deal_data)
+                await self._send_deal_notification(db, item, deal_data, stats)
                 
                 return deal
 
@@ -85,7 +98,7 @@ class EcommerceDealDetector(BaseDealDetector):
             logger.error(f"Failed to create e-commerce deal: {e}")
             return None
 
-    async def _send_deal_notification(self, db: Session, product: Product, deal_data: Dict) -> None:
+    async def _send_deal_notification(self, db: Session, product: Product, deal_data: Dict, stats: Optional[Dict] = None) -> None:
         """Send notifications to users with matching deal preferences."""
         try:
             # Get users with deal preferences for this product
@@ -98,6 +111,14 @@ class EcommerceDealDetector(BaseDealDetector):
             discount_percent = float(deal_data["discount_percent"])
             current_price = float(deal_data["current_price"])
             
+            # Add analytics context to notification
+            extra_info = ""
+            if stats:
+                if stats['current_price'] == stats['lowest_price']:
+                    extra_info = " This is the lowest price in 30 days!"
+                elif stats['savings_percentage'] > 15:
+                    extra_info = f" You're saving {stats['savings_percentage']:.1f}% vs average price!"
+            
             for preference in preferences:
                 # Check if deal meets user's criteria
                 if not self._meets_deal_criteria(preference, discount_percent, current_price):
@@ -108,7 +129,7 @@ class EcommerceDealDetector(BaseDealDetector):
                 # Send email notification
                 await email_service.send_deal_notification(
                     to=user.email,
-                    item_name=product.name,
+                    item_name=product.name + extra_info,
                     category="E-commerce",
                     price=current_price,
                     provider=product.site,
