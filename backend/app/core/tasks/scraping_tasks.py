@@ -5,14 +5,16 @@ import logging
 from typing import List
 
 from celery import group
+from sqlalchemy import select
 
 from app.core.celery_app import celery_app
 from app.core.database import AsyncSessionLocal
 from app.core.scraping.scraper_manager import scraper_manager
+from app.ecommerce.models.product import Product
+from app.real_estate.models.property import Property
 from app.travel.models.flight import Flight
 from app.travel.models.hotel import Hotel
-from app.ecommerce.models.product import Product
-from sqlalchemy import select
+from app.utilities.models.service import UtilityService
 
 logger = logging.getLogger(__name__)
 
@@ -160,9 +162,6 @@ async def _distribute_travel_scraping():
 
 async def _distribute_real_estate_scraping():
     """Distribute real estate scraping to multiple workers."""
-    from app.real_estate.models.property import Property
-    from sqlalchemy import select
-    
     async with AsyncSessionLocal() as db:
         result = await db.execute(
             select(Property.url).where(Property.is_active == True)
@@ -188,9 +187,6 @@ async def _distribute_real_estate_scraping():
 
 async def _distribute_utilities_scraping():
     """Distribute utilities scraping to multiple workers."""
-    from app.utilities.models.service import UtilityService
-    from sqlalchemy import select
-    
     async with AsyncSessionLocal() as db:
         result = await db.execute(
             select(UtilityService.url).where(UtilityService.is_active == True)
