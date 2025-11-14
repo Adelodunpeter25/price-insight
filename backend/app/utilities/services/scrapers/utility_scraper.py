@@ -1,8 +1,7 @@
 """Utility service scraper."""
 
-from typing import Dict, Optional, Any
-
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +17,9 @@ class UtilityScraper(BaseScraper):
         html = await self.fetch(url)
         if not html:
             return None
-            
+
         soup = self.parse(html)
-        
+
         try:
             # Generic selectors for utility service sites
             name_selectors = [
@@ -30,9 +29,9 @@ class UtilityScraper(BaseScraper):
                 "h1",
                 ".title",
                 "[data-service-name]",
-                ".service-title"
+                ".service-title",
             ]
-            
+
             price_selectors = [
                 ".price",
                 ".rate",
@@ -42,7 +41,7 @@ class UtilityScraper(BaseScraper):
                 ".service-price",
                 ".plan-price",
                 ".monthly-rate",
-                ".tariff"
+                ".tariff",
             ]
 
             service_type_selectors = [
@@ -50,15 +49,15 @@ class UtilityScraper(BaseScraper):
                 ".category",
                 "[data-service-type]",
                 ".type",
-                ".plan-type"
+                ".plan-type",
             ]
-            
+
             description_selectors = [
                 ".description",
                 ".service-description",
                 ".plan-description",
                 ".details",
-                ".service-details"
+                ".service-details",
             ]
 
             name = self.extract_text_by_selectors(soup, name_selectors)
@@ -70,14 +69,16 @@ class UtilityScraper(BaseScraper):
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
-                
+
             price = extract_price_from_text(price_text)
             if not price:
                 logger.warning(f"Could not parse price from text: {price_text}")
                 return None
 
             service_type = self.extract_text_by_selectors(soup, service_type_selectors) or "Unknown"
-            description = self.extract_text_by_selectors(soup, description_selectors) or "No description"
+            description = (
+                self.extract_text_by_selectors(soup, description_selectors) or "No description"
+            )
 
             return {
                 "name": f"Service: {name}",

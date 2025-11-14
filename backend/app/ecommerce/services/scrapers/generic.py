@@ -1,8 +1,7 @@
 """Generic e-commerce scraper with configurable selectors."""
 
-from typing import Any, Dict, List, Optional
-
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -64,14 +63,12 @@ class GenericScraper(BaseScraper):
                 "url": url,
                 "availability": availability,
                 "site": site,
-                "currency": "NGN"
+                "currency": "NGN",
             }
 
         except Exception as e:
             logger.error(f"Error extracting data from {url}: {e}")
             return None
-
-
 
 
 # Common selector configurations for popular sites

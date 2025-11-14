@@ -1,8 +1,7 @@
 """Utility scraping job for utilities and subscriptions price tracking."""
 
-from typing import Dict, List
-
 import logging
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 

@@ -1,18 +1,18 @@
 """Real estate deal detection service."""
 
-from decimal import Decimal
-from typing import List, Dict, Any, Optional
+import logging
 from datetime import datetime
+from decimal import Decimal
+from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
-import logging
 
 logger = logging.getLogger(__name__)
 
 from app.core.deal_detection.base_detector import BaseDealDetector
-from app.real_estate.models.property import Property
-from app.real_estate.models.price_history import PriceHistory
 from app.real_estate.models.deal import RealEstateDeal
+from app.real_estate.models.price_history import PriceHistory
+from app.real_estate.models.property import Property
 
 
 class RealEstateDealDetector(BaseDealDetector):
@@ -20,16 +20,19 @@ class RealEstateDealDetector(BaseDealDetector):
 
     def get_items_for_detection(self, db: Session) -> List[Property]:
         """Get active properties for deal detection."""
-        return db.query(Property).filter(
-            Property.is_active == True,
-            Property.price.isnot(None)
-        ).all()
+        return (
+            db.query(Property).filter(Property.is_active, Property.price.isnot(None)).all()
+        )
 
     def get_price_history(self, db: Session, item: Property) -> List[PriceHistory]:
         """Get price history for property."""
-        return db.query(PriceHistory).filter(
-            PriceHistory.property_id == item.id
-        ).order_by(PriceHistory.recorded_at.desc()).limit(30).all()
+        return (
+            db.query(PriceHistory)
+            .filter(PriceHistory.property_id == item.id)
+            .order_by(PriceHistory.recorded_at.desc())
+            .limit(30)
+            .all()
+        )
 
     def get_current_price(self, item: Property) -> Optional[Decimal]:
         """Get current price from property."""
@@ -39,10 +42,11 @@ class RealEstateDealDetector(BaseDealDetector):
         """Create real estate deal record."""
         try:
             # Check if deal already exists
-            existing_deal = db.query(RealEstateDeal).filter(
-                RealEstateDeal.property_id == item.id,
-                RealEstateDeal.is_active == True
-            ).first()
+            existing_deal = (
+                db.query(RealEstateDeal)
+                .filter(RealEstateDeal.property_id == item.id, RealEstateDeal.is_active)
+                .first()
+            )
 
             if existing_deal:
                 # Update existing deal
@@ -63,7 +67,7 @@ class RealEstateDealDetector(BaseDealDetector):
                     discount_percent=deal_data["discount_percent"],
                     savings=deal_data["savings"],
                     is_active=True,
-                    created_at=datetime.utcnow()
+                    created_at=datetime.utcnow(),
                 )
                 db.add(deal)
                 db.flush()

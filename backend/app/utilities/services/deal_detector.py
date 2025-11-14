@@ -1,18 +1,18 @@
 """Utilities deal detection service."""
 
-from decimal import Decimal
-from typing import List, Dict, Any, Optional
+import logging
 from datetime import datetime
+from decimal import Decimal
+from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
-import logging
 
 logger = logging.getLogger(__name__)
 
 from app.core.deal_detection.base_detector import BaseDealDetector
-from app.utilities.models.service import UtilityService
-from app.utilities.models.price_history import PriceHistory
 from app.utilities.models.deal import UtilityDeal
+from app.utilities.models.price_history import PriceHistory
+from app.utilities.models.service import UtilityService
 
 
 class UtilityDealDetector(BaseDealDetector):
@@ -20,29 +20,37 @@ class UtilityDealDetector(BaseDealDetector):
 
     def get_items_for_detection(self, db: Session) -> List[UtilityService]:
         """Get active utility services for deal detection."""
-        return db.query(UtilityService).filter(
-            UtilityService.is_active == True,
-            UtilityService.price.isnot(None)
-        ).all()
+        return (
+            db.query(UtilityService)
+            .filter(UtilityService.is_active, UtilityService.price.isnot(None))
+            .all()
+        )
 
     def get_price_history(self, db: Session, item: UtilityService) -> List[PriceHistory]:
         """Get price history for utility service."""
-        return db.query(PriceHistory).filter(
-            PriceHistory.service_id == item.id
-        ).order_by(PriceHistory.recorded_at.desc()).limit(30).all()
+        return (
+            db.query(PriceHistory)
+            .filter(PriceHistory.service_id == item.id)
+            .order_by(PriceHistory.recorded_at.desc())
+            .limit(30)
+            .all()
+        )
 
     def get_current_price(self, item: UtilityService) -> Optional[Decimal]:
         """Get current price from utility service."""
         return item.price
 
-    def create_deal(self, db: Session, item: UtilityService, deal_data: Dict) -> Optional[UtilityDeal]:
+    def create_deal(
+        self, db: Session, item: UtilityService, deal_data: Dict
+    ) -> Optional[UtilityDeal]:
         """Create utility deal record."""
         try:
             # Check if deal already exists
-            existing_deal = db.query(UtilityDeal).filter(
-                UtilityDeal.service_id == item.id,
-                UtilityDeal.is_active == True
-            ).first()
+            existing_deal = (
+                db.query(UtilityDeal)
+                .filter(UtilityDeal.service_id == item.id, UtilityDeal.is_active)
+                .first()
+            )
 
             if existing_deal:
                 # Update existing deal
@@ -63,7 +71,7 @@ class UtilityDealDetector(BaseDealDetector):
                     discount_percent=deal_data["discount_percent"],
                     savings=deal_data["savings"],
                     is_active=True,
-                    created_at=datetime.utcnow()
+                    created_at=datetime.utcnow(),
                 )
                 db.add(deal)
                 db.flush()

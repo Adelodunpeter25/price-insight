@@ -1,18 +1,18 @@
 """E-commerce deal detection service."""
 
-from decimal import Decimal
-from typing import List, Dict, Any, Optional
+import logging
 from datetime import datetime
+from decimal import Decimal
+from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
-import logging
 
 logger = logging.getLogger(__name__)
 
 from app.core.deal_detection.base_detector import BaseDealDetector
-from app.ecommerce.models.product import Product
-from app.ecommerce.models.price_history import PriceHistory
 from app.ecommerce.models.deal import Deal
+from app.ecommerce.models.price_history import PriceHistory
+from app.ecommerce.models.product import Product
 
 
 class EcommerceDealDetector(BaseDealDetector):
@@ -20,16 +20,21 @@ class EcommerceDealDetector(BaseDealDetector):
 
     def get_items_for_detection(self, db: Session) -> List[Product]:
         """Get active products for deal detection."""
-        return db.query(Product).filter(
-            Product.is_active == True,
-            Product.current_price.isnot(None)
-        ).all()
+        return (
+            db.query(Product)
+            .filter(Product.is_active, Product.current_price.isnot(None))
+            .all()
+        )
 
     def get_price_history(self, db: Session, item: Product) -> List[PriceHistory]:
         """Get price history for product."""
-        return db.query(PriceHistory).filter(
-            PriceHistory.product_id == item.id
-        ).order_by(PriceHistory.recorded_at.desc()).limit(30).all()
+        return (
+            db.query(PriceHistory)
+            .filter(PriceHistory.product_id == item.id)
+            .order_by(PriceHistory.recorded_at.desc())
+            .limit(30)
+            .all()
+        )
 
     def get_current_price(self, item: Product) -> Optional[Decimal]:
         """Get current price from product."""
@@ -39,10 +44,9 @@ class EcommerceDealDetector(BaseDealDetector):
         """Create e-commerce deal record."""
         try:
             # Check if deal already exists for this product
-            existing_deal = db.query(Deal).filter(
-                Deal.product_id == item.id,
-                Deal.is_active == True
-            ).first()
+            existing_deal = (
+                db.query(Deal).filter(Deal.product_id == item.id, Deal.is_active).first()
+            )
 
             if existing_deal:
                 # Update existing deal
@@ -63,7 +67,7 @@ class EcommerceDealDetector(BaseDealDetector):
                     discount_percent=deal_data["discount_percent"],
                     savings=deal_data["savings"],
                     is_active=True,
-                    created_at=datetime.utcnow()
+                    created_at=datetime.utcnow(),
                 )
                 db.add(deal)
                 db.flush()

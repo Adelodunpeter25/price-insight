@@ -1,9 +1,8 @@
 """Utility service for database operations."""
 
+import logging
 from decimal import Decimal
 from typing import List, Optional
-
-import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy import select

@@ -1,18 +1,17 @@
 """Scraper factory for creating appropriate scrapers based on URL."""
 
-from typing import Dict, List, Optional
-from urllib.parse import urlparse
-
 import logging
+from typing import Optional
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
 from app.core.scraping.base_scraper import BaseScraper
 from app.ecommerce.services.scrapers.amazon import AmazonScraper
-from app.ecommerce.services.scrapers.generic import GenericScraper, COMMON_SELECTORS
+from app.ecommerce.services.scrapers.generic import COMMON_SELECTORS, GenericScraper
+from app.real_estate.services.scrapers.property_scraper import PropertyScraper
 from app.travel.services.scrapers.flight_scraper import FlightScraper
 from app.travel.services.scrapers.hotel_scraper import HotelScraper
-from app.real_estate.services.scrapers.property_scraper import PropertyScraper
 from app.utilities.services.scrapers.utility_scraper import UtilityScraper
 
 
@@ -28,7 +27,7 @@ class ScraperFactory:
             "konga.com": self._create_konga_scraper,
             "jiji.ng": self._create_jiji_scraper,
         }
-        
+
         self.travel_sites = {
             "booking.com": HotelScraper,
             "hotels.com": HotelScraper,
@@ -36,13 +35,13 @@ class ScraperFactory:
             "kayak.com": FlightScraper,
             "skyscanner.com": FlightScraper,
         }
-        
+
         self.real_estate_sites = {
             "propertypro.ng": PropertyScraper,
             "tolet.com.ng": PropertyScraper,
             "privateproperty.com.ng": PropertyScraper,
         }
-        
+
         self.utility_sites = {
             "ikedc.com": UtilityScraper,
             "ekedc.com": UtilityScraper,
@@ -54,10 +53,10 @@ class ScraperFactory:
         """Get appropriate scraper for URL and category."""
         try:
             domain = urlparse(url).netloc.replace("www.", "")
-            
+
             if category == "auto":
                 category = self._detect_category(domain)
-            
+
             if category == "ecommerce":
                 return self._get_ecommerce_scraper(domain)
             elif category == "travel":
@@ -69,7 +68,7 @@ class ScraperFactory:
             else:
                 logger.warning(f"Unknown category '{category}' for {url}")
                 return self._get_generic_scraper(domain)
-                
+
         except Exception as e:
             logger.error(f"Failed to create scraper for {url}: {e}")
             return None
@@ -128,35 +127,43 @@ class ScraperFactory:
             return GenericScraper(COMMON_SELECTORS["woocommerce"])
         else:
             # Default generic selectors
-            return GenericScraper({
-                "name": [".product-title", ".title", "h1", ".name", ".product-name"],
-                "price": [".price", ".cost", ".amount", "[data-price]", ".money"],
-                "availability": [".stock", ".availability", ".in-stock", ".out-of-stock"]
-            })
+            return GenericScraper(
+                {
+                    "name": [".product-title", ".title", "h1", ".name", ".product-name"],
+                    "price": [".price", ".cost", ".amount", "[data-price]", ".money"],
+                    "availability": [".stock", ".availability", ".in-stock", ".out-of-stock"],
+                }
+            )
 
     def _create_jumia_scraper(self) -> GenericScraper:
         """Create Jumia-specific scraper."""
-        return GenericScraper({
-            "name": [".name", ".-fs20", ".product-title"],
-            "price": [".-tal", ".price", ".-b", ".-fs24"],
-            "availability": [".stock", ".-fs12"]
-        })
+        return GenericScraper(
+            {
+                "name": [".name", ".-fs20", ".product-title"],
+                "price": [".-tal", ".price", ".-b", ".-fs24"],
+                "availability": [".stock", ".-fs12"],
+            }
+        )
 
     def _create_konga_scraper(self) -> GenericScraper:
         """Create Konga-specific scraper."""
-        return GenericScraper({
-            "name": [".product-title", ".title", "h1"],
-            "price": [".price", ".amount", ".cost"],
-            "availability": [".availability", ".stock"]
-        })
+        return GenericScraper(
+            {
+                "name": [".product-title", ".title", "h1"],
+                "price": [".price", ".amount", ".cost"],
+                "availability": [".availability", ".stock"],
+            }
+        )
 
     def _create_jiji_scraper(self) -> GenericScraper:
         """Create Jiji-specific scraper."""
-        return GenericScraper({
-            "name": [".qa-advert-title", ".title", "h1"],
-            "price": [".qa-advert-price", ".price", ".amount"],
-            "availability": [".status", ".availability"]
-        })
+        return GenericScraper(
+            {
+                "name": [".qa-advert-title", ".title", "h1"],
+                "price": [".qa-advert-price", ".price", ".amount"],
+                "availability": [".status", ".availability"],
+            }
+        )
 
 
 # Global factory instance

@@ -1,6 +1,7 @@
 """Enhanced base scraper with rate limiting and error handling."""
 
 import asyncio
+import logging
 import random
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
@@ -8,8 +9,7 @@ from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
-from app.core.logging import log_event
-import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -67,26 +67,26 @@ class BaseScraper(ABC):
             try:
                 # Rate limiting
                 await asyncio.sleep(self.rate_limit + random.uniform(0, 0.5))
-                
+
                 response = await self.session.get(url, headers=self._get_headers())
                 response.raise_for_status()
-                
+
                 logger.info(f"Successfully fetched: {url}")
                 return response.text
-                
+
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 429:  # Rate limited
-                    wait_time = 2 ** attempt * 5
+                    wait_time = 2**attempt * 5
                     logger.warning(f"Rate limited, waiting {wait_time}s before retry")
                     await asyncio.sleep(wait_time)
                 else:
                     logger.warning(f"HTTP error {e.response.status_code} for {url}")
-                    
+
             except Exception as e:
                 logger.warning(f"Attempt {attempt + 1} failed for {url}: {e}")
-                
+
             if attempt < self.max_retries - 1:
-                await asyncio.sleep(2 ** attempt + random.uniform(0, 1))
+                await asyncio.sleep(2**attempt + random.uniform(0, 1))
 
         logger.error(f"Failed to fetch {url} after {self.max_retries} attempts")
         return None
@@ -108,7 +108,9 @@ class BaseScraper(ABC):
                 logger.debug(f"Selector '{selector}' failed: {e}")
         return None
 
-    def extract_price_by_selectors(self, soup: BeautifulSoup, selectors: List[str]) -> Optional[str]:
+    def extract_price_by_selectors(
+        self, soup: BeautifulSoup, selectors: List[str]
+    ) -> Optional[str]:
         """Extract price text using multiple selectors."""
         for selector in selectors:
             try:
@@ -158,7 +160,7 @@ class BaseScraper(ABC):
 
             logger.info(f"Successfully scraped data from {url}")
             return data
-            
+
         except Exception as e:
             logger.error(f"Scraping failed for {url}: {e}")
             return None

@@ -1,9 +1,8 @@
 """Change detection service for monitoring price changes and triggering alerts."""
 
+import logging
 from decimal import Decimal
 from typing import List, Optional
-
-import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy.ext.asyncio import AsyncSession

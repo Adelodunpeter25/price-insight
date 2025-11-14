@@ -1,9 +1,8 @@
 """Product service for database operations."""
 
+import logging
 from decimal import Decimal
 from typing import List, Optional
-
-import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy import select
@@ -73,7 +72,7 @@ class ProductService:
 
     async def get_products_to_track(self) -> List[Product]:
         """Get all products that should be tracked."""
-        stmt = select(Product).where(Product.is_tracked == True, Product.is_active == True)
+        stmt = select(Product).where(Product.is_tracked, Product.is_active)
         result = await self.db.execute(stmt)
         return list(result.scalars().all())
 

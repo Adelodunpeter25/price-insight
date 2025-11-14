@@ -1,14 +1,12 @@
 """Scheduled scraping jobs for all categories."""
 
-import asyncio
+import logging
 from datetime import datetime
 from typing import Dict
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import logging
 
 logger = logging.getLogger(__name__)
-from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.scraping.scraper_manager import scraper_manager
@@ -43,47 +41,47 @@ class ScrapingJobScheduler:
         # E-commerce products - every 2 hours
         self.scheduler.add_job(
             self._scrape_ecommerce_job,
-            'interval',
+            "interval",
             hours=2,
-            id='scrape_ecommerce',
-            name='Scrape E-commerce Products'
+            id="scrape_ecommerce",
+            name="Scrape E-commerce Products",
         )
 
         # Travel deals - every 4 hours
         self.scheduler.add_job(
             self._scrape_travel_job,
-            'interval',
+            "interval",
             hours=4,
-            id='scrape_travel',
-            name='Scrape Travel Deals'
+            id="scrape_travel",
+            name="Scrape Travel Deals",
         )
 
         # Real estate - every 6 hours
         self.scheduler.add_job(
             self._scrape_real_estate_job,
-            'interval',
+            "interval",
             hours=6,
-            id='scrape_real_estate',
-            name='Scrape Real Estate Properties'
+            id="scrape_real_estate",
+            name="Scrape Real Estate Properties",
         )
 
         # Utilities - every 12 hours
         self.scheduler.add_job(
             self._scrape_utilities_job,
-            'interval',
+            "interval",
             hours=12,
-            id='scrape_utilities',
-            name='Scrape Utility Services'
+            id="scrape_utilities",
+            name="Scrape Utility Services",
         )
 
         # Comprehensive scraping - daily at 2 AM
         self.scheduler.add_job(
             self._comprehensive_scrape_job,
-            'cron',
+            "cron",
             hour=2,
             minute=0,
-            id='comprehensive_scrape',
-            name='Comprehensive Daily Scrape'
+            id="comprehensive_scrape",
+            name="Comprehensive Daily Scrape",
         )
 
     async def _scrape_ecommerce_job(self):
@@ -103,18 +101,18 @@ class ScrapingJobScheduler:
         logger.info("Starting scheduled travel scraping")
         try:
             db = next(get_db())
-            
+
             # Scrape travel deals
             updated_count = await scraper_manager.scrape_travel_deals(db)
             logger.info(f"Travel scraping completed: {updated_count} deals updated")
-            
+
             # Run deal detection
             deal_detector = TravelDealDetector()
             detected_deals = deal_detector.detect_deals(db)
             logger.info(f"Travel deal detection completed: {len(detected_deals)} deals detected")
-            
+
             db.commit()
-            
+
         except Exception as e:
             logger.error(f"Travel scraping job failed: {e}")
             db.rollback()
@@ -151,11 +149,11 @@ class ScrapingJobScheduler:
         try:
             db = next(get_db())
             results = await scraper_manager.scrape_all_categories(db)
-            
+
             total_updated = sum(results.values())
             logger.info(f"Comprehensive scraping completed: {total_updated} total items updated")
             logger.info(f"Breakdown: {results}")
-            
+
         except Exception as e:
             logger.error(f"Comprehensive scraping job failed: {e}")
         finally:
@@ -166,42 +164,42 @@ class ScrapingJobScheduler:
         if category == "all":
             self.scheduler.add_job(
                 self._comprehensive_scrape_job,
-                'date',
+                "date",
                 run_date=datetime.now(),
-                id=f'manual_scrape_all_{datetime.now().timestamp()}',
-                name='Manual Comprehensive Scrape'
+                id=f"manual_scrape_all_{datetime.now().timestamp()}",
+                name="Manual Comprehensive Scrape",
             )
         elif category == "ecommerce":
             self.scheduler.add_job(
                 self._scrape_ecommerce_job,
-                'date',
+                "date",
                 run_date=datetime.now(),
-                id=f'manual_scrape_ecommerce_{datetime.now().timestamp()}',
-                name='Manual E-commerce Scrape'
+                id=f"manual_scrape_ecommerce_{datetime.now().timestamp()}",
+                name="Manual E-commerce Scrape",
             )
         elif category == "travel":
             self.scheduler.add_job(
                 self._scrape_travel_job,
-                'date',
+                "date",
                 run_date=datetime.now(),
-                id=f'manual_scrape_travel_{datetime.now().timestamp()}',
-                name='Manual Travel Scrape'
+                id=f"manual_scrape_travel_{datetime.now().timestamp()}",
+                name="Manual Travel Scrape",
             )
         elif category == "real_estate":
             self.scheduler.add_job(
                 self._scrape_real_estate_job,
-                'date',
+                "date",
                 run_date=datetime.now(),
-                id=f'manual_scrape_real_estate_{datetime.now().timestamp()}',
-                name='Manual Real Estate Scrape'
+                id=f"manual_scrape_real_estate_{datetime.now().timestamp()}",
+                name="Manual Real Estate Scrape",
             )
         elif category == "utilities":
             self.scheduler.add_job(
                 self._scrape_utilities_job,
-                'date',
+                "date",
                 run_date=datetime.now(),
-                id=f'manual_scrape_utilities_{datetime.now().timestamp()}',
-                name='Manual Utilities Scrape'
+                id=f"manual_scrape_utilities_{datetime.now().timestamp()}",
+                name="Manual Utilities Scrape",
             )
         else:
             logger.warning(f"Unknown category for manual scrape: {category}")
@@ -210,17 +208,16 @@ class ScrapingJobScheduler:
         """Get status of all scheduled jobs."""
         jobs = []
         for job in self.scheduler.get_jobs():
-            jobs.append({
-                "id": job.id,
-                "name": job.name,
-                "next_run": job.next_run_time.isoformat() if job.next_run_time else None,
-                "trigger": str(job.trigger)
-            })
-        
-        return {
-            "scheduler_running": self.is_running,
-            "jobs": jobs
-        }
+            jobs.append(
+                {
+                    "id": job.id,
+                    "name": job.name,
+                    "next_run": job.next_run_time.isoformat() if job.next_run_time else None,
+                    "trigger": str(job.trigger),
+                }
+            )
+
+        return {"scheduler_running": self.is_running, "jobs": jobs}
 
 
 # Global scheduler instance

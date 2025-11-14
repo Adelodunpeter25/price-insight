@@ -1,9 +1,10 @@
 """APScheduler configuration and management."""
 
+import logging
+
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,9 @@
 """Notification service for sending alerts via different channels."""
 
+import logging
 import os
 from datetime import datetime
 from typing import List, Set
-
-import logging
 
 logger = logging.getLogger(__name__)
 

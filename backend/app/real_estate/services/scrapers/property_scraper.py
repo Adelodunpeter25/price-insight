@@ -1,8 +1,7 @@
 """Real estate property scraper."""
 
-from typing import Dict, Optional, Any
-
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +17,9 @@ class PropertyScraper(BaseScraper):
         html = await self.fetch(url)
         if not html:
             return None
-            
+
         soup = self.parse(html)
-        
+
         try:
             # Generic selectors for property listing sites
             title_selectors = [
@@ -30,9 +29,9 @@ class PropertyScraper(BaseScraper):
                 "h1",
                 ".title",
                 "[data-property-title]",
-                ".property-header h1"
+                ".property-header h1",
             ]
-            
+
             price_selectors = [
                 ".price",
                 ".property-price",
@@ -42,7 +41,7 @@ class PropertyScraper(BaseScraper):
                 ".amount",
                 ".rent-price",
                 ".sale-price",
-                ".property-cost"
+                ".property-cost",
             ]
 
             location_selectors = [
@@ -52,23 +51,23 @@ class PropertyScraper(BaseScraper):
                 "[data-location]",
                 ".property-address",
                 ".area",
-                ".neighborhood"
+                ".neighborhood",
             ]
-            
+
             type_selectors = [
                 ".property-type",
                 ".listing-type",
                 "[data-property-type]",
                 ".type",
-                ".category"
+                ".category",
             ]
-            
+
             bedrooms_selectors = [
                 ".bedrooms",
                 ".beds",
                 "[data-bedrooms]",
                 ".bedroom-count",
-                ".bed-count"
+                ".bed-count",
             ]
 
             title = self.extract_text_by_selectors(soup, title_selectors)
@@ -80,7 +79,7 @@ class PropertyScraper(BaseScraper):
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
-                
+
             price = extract_price_from_text(price_text)
             if not price:
                 logger.warning(f"Could not parse price from text: {price_text}")

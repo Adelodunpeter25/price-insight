@@ -4,7 +4,6 @@ import unittest
 from decimal import Decimal
 from unittest.mock import patch
 
-
 from tests.test_config import BaseTestCase
 
 

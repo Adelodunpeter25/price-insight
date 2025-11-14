@@ -1,8 +1,7 @@
 """Hotel price scraper."""
 
-from typing import Dict, Optional, Any
-
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +17,9 @@ class HotelScraper(BaseScraper):
         html = await self.fetch(url)
         if not html:
             return None
-            
+
         soup = self.parse(html)
-        
+
         try:
             # Generic selectors for common hotel booking sites
             name_selectors = [
@@ -30,9 +29,9 @@ class HotelScraper(BaseScraper):
                 "h1",
                 ".title",
                 "[data-hotel-name]",
-                ".hotel-title"
+                ".hotel-title",
             ]
-            
+
             price_selectors = [
                 ".price",
                 ".rate",
@@ -43,7 +42,7 @@ class HotelScraper(BaseScraper):
                 ".room-price",
                 ".nightly-rate",
                 ".price-per-night",
-                ".total-price"
+                ".total-price",
             ]
 
             location_selectors = [
@@ -52,15 +51,15 @@ class HotelScraper(BaseScraper):
                 ".hotel-location",
                 "[data-location]",
                 ".property-location",
-                ".destination"
+                ".destination",
             ]
-            
+
             rating_selectors = [
                 ".rating",
                 ".stars",
                 ".hotel-rating",
                 "[data-rating]",
-                ".star-rating"
+                ".star-rating",
             ]
 
             name = self.extract_text_by_selectors(soup, name_selectors)
@@ -72,7 +71,7 @@ class HotelScraper(BaseScraper):
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
-                
+
             price = extract_price_from_text(price_text)
             if not price:
                 logger.warning(f"Could not parse price from text: {price_text}")

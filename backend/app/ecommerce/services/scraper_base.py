@@ -1,12 +1,12 @@
 """Abstract base class for web scrapers."""
 
 import asyncio
+import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 import httpx
 from bs4 import BeautifulSoup
-import logging
 
 logger = logging.getLogger(__name__)
 

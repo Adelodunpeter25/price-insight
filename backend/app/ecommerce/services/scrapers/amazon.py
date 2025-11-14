@@ -1,8 +1,7 @@
 """Amazon-specific scraper implementation."""
 
-from typing import Any, Dict, Optional
-
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +27,14 @@ class AmazonScraper(BaseScraper):
         try:
             # Extract product name
             name_selectors = [
-                "#productTitle", 
-                ".product-title", 
+                "#productTitle",
+                ".product-title",
                 "h1.a-size-large",
                 "h1[data-automation-id='product-title']",
-                ".pdp-product-name"
+                ".pdp-product-name",
             ]
             name = self.extract_text_by_selectors(soup, name_selectors)
-            
+
             if not name:
                 logger.warning(f"Could not extract product name from {url}")
                 return None
@@ -49,14 +48,14 @@ class AmazonScraper(BaseScraper):
                 "#priceblock_ourprice",
                 ".a-price-range",
                 "[data-automation-id='product-price']",
-                ".notranslate"
+                ".notranslate",
             ]
-            
+
             price_text = self.extract_price_by_selectors(soup, price_selectors)
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
-                
+
             price = extract_price_from_text(price_text)
             if not price:
                 logger.warning(f"Could not parse price from text: {price_text}")
@@ -64,13 +63,13 @@ class AmazonScraper(BaseScraper):
 
             # Extract availability
             availability_selectors = [
-                "#availability span", 
-                ".a-color-success", 
+                "#availability span",
+                ".a-color-success",
                 ".a-color-state",
                 "#availability .a-color-state",
-                "[data-automation-id='availability']"
+                "[data-automation-id='availability']",
             ]
-            
+
             availability = self.extract_text_by_selectors(soup, availability_selectors) or "Unknown"
 
             return {
@@ -79,7 +78,7 @@ class AmazonScraper(BaseScraper):
                 "url": url,
                 "availability": availability,
                 "site": self.get_site_name(url),
-                "currency": "NGN"
+                "currency": "NGN",
             }
 
         except Exception as e:

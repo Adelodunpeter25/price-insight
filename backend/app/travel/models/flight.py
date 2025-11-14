@@ -1,6 +1,5 @@
 """Flight model for travel price tracking."""
 
-
 from sqlalchemy import Column, Date, Integer, Numeric, String, Text
 
 from app.core.models.base import BaseModel

@@ -1,9 +1,7 @@
 """Flight price scraper."""
 
-from decimal import Decimal
-from typing import Dict, Optional, Any
-
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +17,9 @@ class FlightScraper(BaseScraper):
         html = await self.fetch(url)
         if not html:
             return None
-            
+
         soup = self.parse(html)
-        
+
         try:
             # Generic selectors for common travel sites
             price_selectors = [
@@ -34,7 +32,7 @@ class FlightScraper(BaseScraper):
                 ".total-price",
                 ".booking-price",
                 ".price-text",
-                ".fare-price"
+                ".fare-price",
             ]
 
             airline_selectors = [
@@ -44,21 +42,16 @@ class FlightScraper(BaseScraper):
                 "[data-airline]",
                 ".flight-operator",
                 ".airline-name",
-                ".carrier-name"
+                ".carrier-name",
             ]
-            
-            route_selectors = [
-                ".route",
-                ".flight-route",
-                ".origin-destination",
-                "[data-route]"
-            ]
+
+            route_selectors = [".route", ".flight-route", ".origin-destination", "[data-route]"]
 
             price_text = self.extract_price_by_selectors(soup, price_selectors)
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
-                
+
             price = extract_price_from_text(price_text)
             if not price:
                 logger.warning(f"Could not parse price from text: {price_text}")
@@ -80,5 +73,3 @@ class FlightScraper(BaseScraper):
         except Exception as e:
             logger.error(f"Failed to extract flight data from {url}: {e}")
             return None
-
-

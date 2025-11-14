@@ -1,9 +1,8 @@
 """Alert rules engine for evaluating notification triggers."""
 
+import logging
 from decimal import Decimal
 from typing import List, Optional
-
-import logging
 
 logger = logging.getLogger(__name__)
 from sqlalchemy import select
@@ -27,7 +26,9 @@ class AlertRulesEngine:
         """Evaluate all alert rules for a price change."""
 
         # Get all active alert rules for this product
-        stmt = select(AlertRule).where(AlertRule.product_id == product_id, AlertRule.is_active == True)
+        stmt = select(AlertRule).where(
+            AlertRule.product_id == product_id, AlertRule.is_active
+        )
         result = await self.db.execute(stmt)
         alert_rules = list(result.scalars().all())
 

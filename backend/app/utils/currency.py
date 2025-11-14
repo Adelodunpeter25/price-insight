@@ -1,11 +1,11 @@
 """Currency conversion utilities."""
 
+import logging
 import re
 from decimal import Decimal
 from typing import Optional, Tuple
 
 import httpx
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -1,11 +1,10 @@
 """Base deal detection engine."""
 
-from abc import ABC, abstractmethod
-from decimal import Decimal
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-
 import logging
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 from sqlalchemy.orm import Session
@@ -48,30 +47,27 @@ class BaseDealDetector(ABC):
         # Get recent prices (last 7 days)
         recent_cutoff = datetime.utcnow() - timedelta(days=7)
         recent_prices = [
-            p for p in price_history 
-            if hasattr(p, 'recorded_at') and p.recorded_at >= recent_cutoff
+            p for p in price_history if hasattr(p, "recorded_at") and p.recorded_at >= recent_cutoff
         ]
 
         if not recent_prices:
             return None
 
         # Find highest recent price
-        highest_price = max(
-            getattr(p, 'price', Decimal('0')) for p in recent_prices
-        )
+        highest_price = max(getattr(p, "price", Decimal("0")) for p in recent_prices)
 
         if highest_price <= current_price:
             return None
 
         # Calculate discount
         discount_percent = calculate_discount_percentage(highest_price, current_price)
-        
+
         if is_valid_deal(discount_percent, self.min_discount):
             return {
                 "original_price": highest_price,
                 "current_price": current_price,
                 "discount_percent": discount_percent,
-                "savings": highest_price - current_price
+                "savings": highest_price - current_price,
             }
 
         return None
@@ -94,14 +90,12 @@ class BaseDealDetector(ABC):
                     # Create deal record
                     deal = self.create_deal(db, item, deal_data)
                     if deal:
-                        detected_deals.append({
-                            "item": item,
-                            "deal": deal,
-                            "deal_data": deal_data
-                        })
+                        detected_deals.append({"item": item, "deal": deal, "deal_data": deal_data})
                         logger.info(f"Deal detected: {deal_data['discount_percent']:.1f}% off")
 
             except Exception as e:
-                logger.error(f"Error detecting deals for item {getattr(item, 'id', 'unknown')}: {e}")
+                logger.error(
+                    f"Error detecting deals for item {getattr(item, 'id', 'unknown')}: {e}"
+                )
 
         return detected_deals
