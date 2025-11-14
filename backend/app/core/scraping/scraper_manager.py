@@ -4,7 +4,9 @@ import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db

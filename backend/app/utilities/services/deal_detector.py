@@ -5,7 +5,9 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 from sqlalchemy.orm import Session
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.deal_detection.base_detector import BaseDealDetector
 from app.utilities.models.service import UtilityService

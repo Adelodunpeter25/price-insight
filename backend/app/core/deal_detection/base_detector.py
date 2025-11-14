@@ -5,7 +5,9 @@ from decimal import Decimal
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 from sqlalchemy.orm import Session
 
 from app.utils.helpers import calculate_discount_percentage, is_valid_deal

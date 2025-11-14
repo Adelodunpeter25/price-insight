@@ -2,7 +2,9 @@
 
 from typing import Any, Dict, List, Optional
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.scraping.base_scraper import BaseScraper
 from app.utils.helpers import extract_price_from_text

@@ -8,7 +8,10 @@ from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
-from loguru import logger
+from app.core.logging import log_event
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.utils.currency import currency_converter
 from app.utils.helpers import validate_url

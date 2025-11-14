@@ -5,7 +5,9 @@ from decimal import Decimal
 from typing import Optional, Tuple
 
 import httpx
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.config import settings
 
