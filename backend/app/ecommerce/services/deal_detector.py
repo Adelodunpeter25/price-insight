@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from app.core.deal_detection.base_detector import BaseDealDetector
+from app.core.services.background_tasks import background_tasks
 from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
 from app.core.models.user import User
@@ -126,8 +127,9 @@ class EcommerceDealDetector(BaseDealDetector):
                     
                 user = preference.user
                 
-                # Send email notification
-                await email_service.send_deal_notification(
+                # Send email notification in background (non-blocking)
+                background_tasks.add_task(
+                    email_service.send_deal_notification,
                     to=user.email,
                     item_name=product.name + extra_info,
                     category="E-commerce",

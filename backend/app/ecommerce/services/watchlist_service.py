@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
+from app.core.services.background_tasks import background_tasks
 from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
 from app.ecommerce.models.price_history import PriceHistory
@@ -207,13 +208,13 @@ class WatchlistService:
         try:
             user = watchlist.user
             
-            await email_service.send_price_alert(
+            # Send email in background (non-blocking)
+            background_tasks.add_task(
+                email_service.send_price_alert,
                 to=user.email,
-                item_name=product.name,
-                category="E-commerce",
+                product_name=product.name,
                 old_price=target_price,
                 new_price=current_price,
-                provider=product.site,
                 currency="₦"
             )
             
