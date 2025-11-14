@@ -9,7 +9,10 @@ celery_app = Celery(
     "price_insight",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.core.tasks.email_tasks"]
+    include=[
+        "app.core.tasks.email_tasks",
+        "app.core.tasks.scraping_tasks"
+    ]
 )
 
 # Celery configuration

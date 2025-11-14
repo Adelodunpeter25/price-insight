@@ -11,6 +11,12 @@ from app.core.models.user import User
 from app.core.scraping.scraper_factory import scraper_factory
 from app.core.scraping.scraper_manager import scraper_manager
 from app.core.scraping.scraping_jobs import scraping_scheduler
+from app.core.tasks.scraping_tasks import (
+    scrape_all_ecommerce,
+    scrape_all_real_estate,
+    scrape_all_travel,
+    scrape_all_utilities,
+)
 
 router = APIRouter(prefix="/scraping", tags=["Scraping"])
 
@@ -33,7 +39,8 @@ async def scrape_single_url(
 @router.post("/scrape-category/{category}")
 async def scrape_category(
     category: str,
-    background_tasks: BackgroundTasks,
+    distributed: bool = True,
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
@@ -45,14 +52,40 @@ async def scrape_category(
             status_code=400, detail=f"Invalid category. Must be one of: {valid_categories}"
         )
 
-    # Trigger manual scraping in background
-    scraping_scheduler.trigger_manual_scrape(category)
-
-    return {
-        "success": True,
-        "message": f"Scraping job for '{category}' category has been queued",
-        "category": category,
-    }
+    if distributed:
+        # Use distributed Celery tasks
+        task_map = {
+            "ecommerce": scrape_all_ecommerce,
+            "travel": scrape_all_travel,
+            "real_estate": scrape_all_real_estate,
+            "utilities": scrape_all_utilities,
+        }
+        
+        if category == "all":
+            tasks = [task.delay() for task in task_map.values()]
+            return {
+                "success": True,
+                "message": "Distributed scraping started for all categories",
+                "task_ids": [t.id for t in tasks],
+                "mode": "distributed"
+            }
+        
+        task = task_map[category].delay()
+        return {
+            "success": True,
+            "message": f"Distributed scraping started for '{category}'",
+            "task_id": task.id,
+            "mode": "distributed"
+        }
+    else:
+        # Use original scheduler method
+        scraping_scheduler.trigger_manual_scrape(category)
+        return {
+            "success": True,
+            "message": f"Scraping job for '{category}' category has been queued",
+            "category": category,
+            "mode": "scheduler"
+        }
 
 
 @router.get("/status")
@@ -92,4 +125,22 @@ async def get_supported_sites() -> Dict[str, Any]:
         "real_estate_sites": list(factory.real_estate_sites.keys()),
         "utility_sites": list(factory.utility_sites.keys()),
         "message": "Sites with specific scrapers. Generic scraping available for other sites.",
+    }
+
+
+@router.get("/task/{task_id}")
+async def get_task_status(
+    task_id: str,
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
+    """Get status of distributed scraping task."""
+    from celery.result import AsyncResult
+    
+    task = AsyncResult(task_id)
+    
+    return {
+        "task_id": task_id,
+        "status": task.state,
+        "result": task.result if task.ready() else None,
+        "info": task.info
     }
