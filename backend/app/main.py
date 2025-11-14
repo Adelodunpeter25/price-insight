@@ -17,6 +17,7 @@ from app.core.routes.scraping import router as scraping_router
 from app.core.routes.status import router as status_router
 from app.core.scheduler import scheduler_manager
 from app.core.scraping.scraping_jobs import scraping_scheduler
+from app.ecommerce.routes.analytics import router as analytics_router
 from app.ecommerce.routes.deals import router as deals_router
 from app.ecommerce.routes.deal_preferences import router as deal_preferences_router
 from app.ecommerce.routes.export import router as ecommerce_export_router
@@ -84,6 +85,7 @@ app.include_router(deals_router)
 app.include_router(deal_preferences_router)
 app.include_router(price_analytics_router)
 app.include_router(watchlist_router)
+app.include_router(analytics_router)
 app.include_router(travel_router)
 app.include_router(properties_router)
 app.include_router(re_deals_router)
