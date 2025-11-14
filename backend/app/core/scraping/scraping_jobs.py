@@ -29,7 +29,7 @@ class ScrapingJobScheduler:
             'default': RedisJobStore(
                 host=self._parse_redis_host(settings.redis_url),
                 port=self._parse_redis_port(settings.redis_url),
-                db=0,
+                db=self._parse_redis_db(settings.redis_url),
                 jobs_key='apscheduler.jobs',
                 run_times_key='apscheduler.run_times'
             )
@@ -56,16 +56,31 @@ class ScrapingJobScheduler:
     
     def _parse_redis_host(self, redis_url: str) -> str:
         """Extract host from redis URL."""
-        # redis://localhost:6379 -> localhost
-        return redis_url.replace('redis://', '').split(':')[0]
+        # redis://localhost:6379/0 -> localhost
+        url = redis_url.replace('redis://', '')
+        return url.split(':')[0].split('/')[0]
     
     def _parse_redis_port(self, redis_url: str) -> int:
         """Extract port from redis URL."""
-        # redis://localhost:6379 -> 6379
+        # redis://localhost:6379/0 -> 6379
         try:
-            return int(redis_url.split(':')[-1])
+            url = redis_url.replace('redis://', '')
+            if ':' in url:
+                port_part = url.split(':')[1].split('/')[0]
+                return int(port_part)
+            return 6379
         except:
             return 6379
+    
+    def _parse_redis_db(self, redis_url: str) -> int:
+        """Extract database number from redis URL."""
+        # redis://localhost:6379/0 -> 0
+        try:
+            if '/' in redis_url:
+                return int(redis_url.split('/')[-1])
+            return 0
+        except:
+            return 0
 
     def start(self):
         """Start the scheduler with persistent jobs."""
