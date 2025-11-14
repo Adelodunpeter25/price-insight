@@ -25,16 +25,16 @@ router = APIRouter(prefix="/watchlist", tags=["Watchlist"])
 
 
 @router.post("", response_model=WatchlistResponse, status_code=201)
-def add_to_watchlist(
+async def add_to_watchlist(
     data: WatchlistCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Add product to watchlist."""
-    watchlist = WatchlistService.add_to_watchlist(
+    """Add product to watchlist by name or URL."""
+    watchlist = await WatchlistService.add_to_watchlist(
         db=db,
         user_id=current_user.id,
-        product_id=data.product_id,
+        product_name_or_url=data.product_name,
         target_price=data.target_price,
         alert_on_any_drop=data.alert_on_any_drop,
         alert_on_target=data.alert_on_target,
@@ -42,7 +42,10 @@ def add_to_watchlist(
     )
     
     if not watchlist:
-        raise HTTPException(status_code=400, detail="Failed to add to watchlist")
+        raise HTTPException(
+            status_code=400, 
+            detail="Failed to add to watchlist. Product not found or could not be scraped."
+        )
     
     return watchlist
 

@@ -19,34 +19,53 @@ class WatchlistService:
     """Service for managing user watchlists."""
 
     @staticmethod
-    def add_to_watchlist(
+    async def add_to_watchlist(
         db: Session,
         user_id: int,
-        product_id: int,
+        product_name_or_url: str,
         target_price: Optional[Decimal] = None,
         alert_on_any_drop: bool = True,
         alert_on_target: bool = True,
         notes: Optional[str] = None
     ) -> Optional[Watchlist]:
-        """Add product to user's watchlist."""
+        """Add product to user's watchlist by name or URL."""
         try:
+            from app.ecommerce.services.product_search import ProductSearchService
+            from app.utils.helpers import validate_url
+            
+            product = None
+            
+            # Check if input is a URL
+            if validate_url(product_name_or_url):
+                # Scrape from URL
+                product = await ProductSearchService.scrape_product_from_url(db, product_name_or_url)
+            else:
+                # Search in tracked products first
+                tracked = ProductSearchService.search_tracked_products(db, product_name_or_url, limit=1)
+                if tracked:
+                    product = tracked[0]
+                else:
+                    # Search and scrape from e-commerce sites
+                    products = await ProductSearchService.search_and_scrape_products(db, product_name_or_url, max_results=1)
+                    if products:
+                        product = products[0]
+            
+            if not product:
+                logger.error(f"Could not find or scrape product: {product_name_or_url}")
+                return None
+            
             # Check if already in watchlist
             existing = db.query(Watchlist).filter(
                 Watchlist.user_id == user_id,
-                Watchlist.product_id == product_id
+                Watchlist.product_id == product.id
             ).first()
             
             if existing:
                 return existing
             
-            # Verify product exists
-            product = db.query(Product).filter(Product.id == product_id).first()
-            if not product:
-                return None
-            
             watchlist = Watchlist(
                 user_id=user_id,
-                product_id=product_id,
+                product_id=product.id,
                 target_price=target_price,
                 alert_on_any_drop=alert_on_any_drop,
                 alert_on_target=alert_on_target,
@@ -57,7 +76,7 @@ class WatchlistService:
             db.commit()
             db.refresh(watchlist)
             
-            logger.info(f"Added product {product_id} to watchlist for user {user_id}")
+            logger.info(f"Added product {product.id} to watchlist for user {user_id}")
             return watchlist
             
         except Exception as e:

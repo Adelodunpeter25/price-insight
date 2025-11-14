@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 class WatchlistCreate(BaseModel):
     """Schema for creating watchlist item."""
     
-    product_id: int
+    product_name: str = Field(..., min_length=1, max_length=500, description="Product name or URL")
     target_price: Optional[Decimal] = None
     alert_on_any_drop: bool = True
     alert_on_target: bool = True
