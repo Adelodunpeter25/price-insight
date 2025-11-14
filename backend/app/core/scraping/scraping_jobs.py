@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 from app.core.database import get_db
 from app.core.scraping.scraper_manager import scraper_manager
+from app.ecommerce.services.deal_detector import EcommerceDealDetector
 from app.ecommerce.services.watchlist_service import WatchlistService
 from app.travel.services.deal_detector import TravelDealDetector
 
@@ -92,6 +93,15 @@ class ScrapingJobScheduler:
             minutes=30,
             id="check_watchlist_alerts",
             name="Check Watchlist Price Alerts",
+        )
+        
+        # E-commerce deal detection - every 1 hour
+        self.scheduler.add_job(
+            self._detect_ecommerce_deals_job,
+            "interval",
+            hours=1,
+            id="detect_ecommerce_deals",
+            name="Detect E-commerce Deals",
         )
 
     async def _scrape_ecommerce_job(self) -> None:
@@ -178,6 +188,21 @@ class ScrapingJobScheduler:
             logger.info("Watchlist alerts check completed")
         except Exception as e:
             logger.error(f"Watchlist alerts check failed: {e}")
+        finally:
+            db.close()
+    
+    async def _detect_ecommerce_deals_job(self) -> None:
+        """Scheduled job for e-commerce deal detection."""
+        logger.info("Starting e-commerce deal detection")
+        try:
+            db = next(get_db())
+            deal_detector = EcommerceDealDetector()
+            detected_deals = deal_detector.detect_deals(db)
+            logger.info(f"E-commerce deal detection completed: {len(detected_deals)} deals detected")
+            db.commit()
+        except Exception as e:
+            logger.error(f"E-commerce deal detection failed: {e}")
+            db.rollback()
         finally:
             db.close()
 
