@@ -1,23 +1,23 @@
-"""Amazon-specific scraper implementation."""
+"""Konga-specific scraper implementation."""
 
 import logging
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
-
 from app.core.scraping.base_scraper import BaseScraper
 from app.utils.helpers import extract_price_from_text
 
+logger = logging.getLogger(__name__)
 
-class AmazonScraper(BaseScraper):
-    """Amazon product scraper."""
+
+class KongaScraper(BaseScraper):
+    """Konga product scraper."""
 
     def __init__(self):
-        """Initialize Amazon scraper."""
-        super().__init__(timeout=30, max_retries=3)
+        """Initialize Konga scraper."""
+        super().__init__(timeout=30, max_retries=3, rate_limit=1.5)
 
     async def extract_data(self, url: str) -> Optional[Dict[str, Any]]:
-        """Extract product data from Amazon URL."""
+        """Extract product data from Konga URL."""
         html = await self.fetch(url)
         if not html:
             return None
@@ -25,49 +25,40 @@ class AmazonScraper(BaseScraper):
         soup = self.parse(html)
 
         try:
-            # Amazon-specific selectors (more comprehensive)
+            # Konga-specific selectors
             name_selectors = [
-                "#productTitle",
-                "#title",
                 ".product-title",
-                "h1.a-size-large",
-                "h1[data-automation-id='product-title']",
+                "h1.product-name",
                 ".pdp-product-name",
-                "span[data-automation-id='product-title']",
-                ".a-size-large.product-title-word-break"
+                ".product-details h1",
+                "[data-testid='product-title']",
+                ".item-title"
             ]
             
             price_selectors = [
-                ".a-price-whole",
-                ".a-offscreen",
-                ".a-price .a-offscreen",
-                "#priceblock_dealprice",
-                "#priceblock_ourprice",
-                "#price_inside_buybox",
-                ".a-price-range",
-                "[data-automation-id='product-price']",
-                ".notranslate",
-                ".a-price.a-text-price.a-size-medium.apexPriceToPay",
-                "span.a-price-symbol + span.a-price-whole",
-                ".a-price-current"
+                ".price",
+                ".current-price",
+                ".product-price",
+                ".amount",
+                ".price-current",
+                ".sale-price",
+                "[data-testid='price']"
             ]
             
             availability_selectors = [
-                "#availability span",
-                ".a-color-success",
-                ".a-color-state",
-                "#availability .a-color-state",
-                "[data-automation-id='availability']",
-                "#availability-brief",
-                ".a-color-price"
+                ".stock-status",
+                ".availability",
+                ".in-stock",
+                ".stock-indicator",
+                ".product-availability"
             ]
 
-            # Try Amazon-specific extraction first
+            # Try Konga-specific extraction
             name = self.extract_text_by_selectors(soup, name_selectors)
             price_text = self.extract_price_by_selectors(soup, price_selectors)
             availability = self.extract_text_by_selectors(soup, availability_selectors)
 
-            # Fallback to smart extraction if Amazon-specific fails
+            # Fallback to smart extraction
             if not name or not price_text:
                 fallback_data = self.smart_extract_data(soup, url)
                 if fallback_data:
@@ -94,5 +85,5 @@ class AmazonScraper(BaseScraper):
             }
 
         except Exception as e:
-            logger.error(f"Error extracting data from Amazon URL {url}: {e}")
+            logger.error(f"Error extracting data from Konga URL {url}: {e}")
             return None

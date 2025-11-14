@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 from app.core.scraping.base_scraper import BaseScraper
 from app.ecommerce.services.scrapers.amazon import AmazonScraper
 from app.ecommerce.services.scrapers.generic import COMMON_SELECTORS, GenericScraper
+from app.ecommerce.services.scrapers.jumia import JumiaScraper
+from app.ecommerce.services.scrapers.konga import KongaScraper
 from app.real_estate.services.scrapers.property_scraper import PropertyScraper
 from app.travel.services.scrapers.flight_scraper import FlightScraper
 from app.travel.services.scrapers.hotel_scraper import HotelScraper
@@ -23,8 +25,9 @@ class ScraperFactory:
         self.ecommerce_sites = {
             "amazon.com": AmazonScraper,
             "amazon.ng": AmazonScraper,
-            "jumia.com.ng": self._create_jumia_scraper,
-            "konga.com": self._create_konga_scraper,
+            "jumia.com.ng": JumiaScraper,
+            "jumia.ng": JumiaScraper,
+            "konga.com": KongaScraper,
             "jiji.ng": self._create_jiji_scraper,
         }
 
@@ -135,25 +138,7 @@ class ScraperFactory:
                 }
             )
 
-    def _create_jumia_scraper(self) -> GenericScraper:
-        """Create Jumia-specific scraper."""
-        return GenericScraper(
-            {
-                "name": [".name", ".-fs20", ".product-title"],
-                "price": [".-tal", ".price", ".-b", ".-fs24"],
-                "availability": [".stock", ".-fs12"],
-            }
-        )
 
-    def _create_konga_scraper(self) -> GenericScraper:
-        """Create Konga-specific scraper."""
-        return GenericScraper(
-            {
-                "name": [".product-title", ".title", "h1"],
-                "price": [".price", ".amount", ".cost"],
-                "availability": [".availability", ".stock"],
-            }
-        )
 
     def _create_jiji_scraper(self) -> GenericScraper:
         """Create Jiji-specific scraper."""

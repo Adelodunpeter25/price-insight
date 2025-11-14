@@ -9,6 +9,11 @@ from .deal import (
     DealResponse,
     DealWithProductResponse,
 )
+from .deal_preference import (
+    DealPreferenceCreate,
+    DealPreferenceResponse,
+    DealPreferenceUpdate,
+)
 from .product import (
     ProductCreate,
     ProductDetailResponse,
@@ -26,6 +31,9 @@ __all__ = [
     "DealResponse",
     "DealWithProductResponse",
     "DealListResponse",
+    "DealPreferenceCreate",
+    "DealPreferenceUpdate",
+    "DealPreferenceResponse",
     "AlertRuleCreate",
     "AlertRuleResponse",
     "AlertHistoryResponse",

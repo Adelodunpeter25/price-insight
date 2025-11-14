@@ -3,9 +3,10 @@
 import asyncio
 import logging
 import random
+import re
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -30,6 +31,25 @@ class BaseScraper(ABC):
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         ]
+        
+        # Common selectors for major e-commerce sites
+        self.common_selectors = {
+            'name': [
+                '#productTitle', '.product-title', '.product__title', '.product_title',
+                'h1.product-single__title', '.entry-title', '[data-testid="product-title"]',
+                '.pdp-product-name', '.product-name', '.item-title'
+            ],
+            'price': [
+                '.a-price-whole', '.a-offscreen', '.a-price .a-offscreen', '#priceblock_dealprice',
+                '#priceblock_ourprice', '.price', '.product-price', '.money', '.product__price',
+                '.woocommerce-Price-amount', '.amount', '[data-testid="price"]',
+                '.current-price', '.sale-price', '.price-current'
+            ],
+            'availability': [
+                '#availability span', '.a-color-success', '.a-color-state',
+                '.stock-status', '.availability', '.stock', '.in-stock'
+            ]
+        }
 
     async def __aenter__(self) -> "BaseScraper":
         """Async context manager entry."""
@@ -45,49 +65,99 @@ class BaseScraper(ABC):
         if self.session:
             await self.session.aclose()
 
-    def _get_headers(self) -> Dict[str, str]:
-        """Get randomized headers."""
-        return {
+    def _get_headers(self, url: str = None) -> Dict[str, str]:
+        """Get randomized headers with site-specific adjustments."""
+        headers = {
             "User-Agent": random.choice(self.user_agents),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
             "Accept-Encoding": "gzip, deflate",
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
         }
+        
+        # Site-specific headers
+        if url:
+            domain = urlparse(url).netloc.lower()
+            if 'amazon' in domain:
+                headers.update({
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "sec-fetch-dest": "document",
+                    "sec-fetch-mode": "navigate",
+                    "sec-fetch-site": "none"
+                })
+            elif 'jumia' in domain:
+                headers["Accept-Language"] = "en-NG,en;q=0.9"
+                
+        return headers
+
+    def normalize_url(self, url: str) -> str:
+        """Normalize URL by removing tracking parameters."""
+        try:
+            parsed = urlparse(url)
+            parsed = parsed._replace(fragment='')
+            
+            query_params = parse_qs(parsed.query)
+            essential_params = {}
+            
+            domain = parsed.netloc.lower()
+            if 'amazon' in domain:
+                for key in ['dp', 'gp', 'asin', 'th', 'psc']:
+                    if key in query_params:
+                        essential_params[key] = query_params[key]
+            elif 'jumia' in domain:
+                for key in ['sku', 'catalog']:
+                    if key in query_params:
+                        essential_params[key] = query_params[key]
+            elif 'konga' in domain:
+                for key in ['product_id', 'pid']:
+                    if key in query_params:
+                        essential_params[key] = query_params[key]
+            
+            clean_query = urlencode(essential_params, doseq=True) if essential_params else ''
+            return urlunparse(parsed._replace(query=clean_query))
+        except Exception:
+            return url
 
     async def fetch(self, url: str) -> Optional[str]:
         """Fetch HTML content with rate limiting and retry logic."""
-        if not validate_url(url):
-            logger.error(f"Invalid URL: {url}")
+        normalized_url = self.normalize_url(url)
+        
+        if not validate_url(normalized_url):
+            logger.error(f"Invalid URL: {normalized_url}")
             return None
 
         for attempt in range(self.max_retries):
             try:
-                # Rate limiting
                 await asyncio.sleep(self.rate_limit + random.uniform(0, 0.5))
 
-                response = await self.session.get(url, headers=self._get_headers())
+                response = await self.session.get(normalized_url, headers=self._get_headers(normalized_url))
                 response.raise_for_status()
 
-                logger.info(f"Successfully fetched: {url}")
+                logger.info(f"Successfully fetched: {normalized_url}")
                 return response.text
 
             except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429:  # Rate limited
+                if e.response.status_code == 429:
                     wait_time = 2**attempt * 5
                     logger.warning(f"Rate limited, waiting {wait_time}s before retry")
                     await asyncio.sleep(wait_time)
+                elif e.response.status_code == 403:
+                    logger.warning(f"Access forbidden for {normalized_url}, trying with different headers")
+                    # Rotate user agent
+                    self.user_agents = self.user_agents[1:] + [self.user_agents[0]]
                 else:
-                    logger.warning(f"HTTP error {e.response.status_code} for {url}")
+                    logger.warning(f"HTTP error {e.response.status_code} for {normalized_url}")
 
             except Exception as e:
-                logger.warning(f"Attempt {attempt + 1} failed for {url}: {e}")
+                logger.warning(f"Attempt {attempt + 1} failed for {normalized_url}: {e}")
 
             if attempt < self.max_retries - 1:
                 await asyncio.sleep(2**attempt + random.uniform(0, 1))
 
-        logger.error(f"Failed to fetch {url} after {self.max_retries} attempts")
+        logger.error(f"Failed to fetch {normalized_url} after {self.max_retries} attempts")
         return None
 
     def parse(self, html: str) -> BeautifulSoup:
@@ -116,11 +186,58 @@ class BaseScraper(ABC):
                 elements = soup.select(selector)
                 for element in elements:
                     text = element.get_text(strip=True)
-                    if text and any(char.isdigit() for char in text):
+                    # Look for price patterns
+                    if text and re.search(r'[₦$£€¥]?[\d,]+\.?\d*', text):
                         return text
             except Exception as e:
                 logger.debug(f"Price selector '{selector}' failed: {e}")
         return None
+
+    def smart_extract_data(self, soup: BeautifulSoup, url: str) -> Optional[Dict[str, Any]]:
+        """Smart extraction using common selectors and fallbacks."""
+        try:
+            # Extract name
+            name = self.extract_text_by_selectors(soup, self.common_selectors['name'])
+            if not name:
+                # Fallback to title tag or h1
+                title_elem = soup.find('title')
+                if title_elem:
+                    name = title_elem.get_text(strip=True)
+                else:
+                    h1_elem = soup.find('h1')
+                    if h1_elem:
+                        name = h1_elem.get_text(strip=True)
+            
+            if not name:
+                return None
+
+            # Extract price
+            price_text = self.extract_price_by_selectors(soup, self.common_selectors['price'])
+            if not price_text:
+                # Fallback: search for price patterns in text
+                all_text = soup.get_text()
+                price_match = re.search(r'[₦$£€¥]([\d,]+(?:\.\d{2})?)', all_text)
+                if price_match:
+                    price_text = price_match.group(0)
+            
+            if not price_text:
+                return None
+
+            # Extract availability
+            availability = self.extract_text_by_selectors(soup, self.common_selectors['availability']) or "Unknown"
+
+            return {
+                "name": name[:200],  # Limit name length
+                "price": price_text,
+                "url": url,
+                "availability": availability,
+                "site": self.get_site_name(url),
+                "currency": "NGN",
+            }
+
+        except Exception as e:
+            logger.error(f"Smart extraction failed for {url}: {e}")
+            return None
 
     def get_site_name(self, url: str) -> str:
         """Extract site name from URL."""

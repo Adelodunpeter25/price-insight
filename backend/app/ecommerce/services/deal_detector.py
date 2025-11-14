@@ -14,6 +14,7 @@ from app.core.models.user import User
 
 logger = logging.getLogger(__name__)
 from app.ecommerce.models.deal import Deal
+from app.ecommerce.models.deal_preference import DealPreference
 from app.ecommerce.models.price_history import PriceHistory
 from app.ecommerce.models.product import Product
 
@@ -85,21 +86,33 @@ class EcommerceDealDetector(BaseDealDetector):
             return None
 
     async def _send_deal_notification(self, db: Session, product: Product, deal_data: Dict) -> None:
-        """Send email and in-app notifications for new deal."""
+        """Send notifications to users with matching deal preferences."""
         try:
-            # Get users who might be interested
-            users = db.query(User).filter(User.is_active).all()
-            notification_service = NotificationService(db)
+            # Get users with deal preferences for this product
+            preferences = db.query(DealPreference).filter(
+                DealPreference.product_id == product.id,
+                DealPreference.enable_deal_alerts == True
+            ).all()
             
-            for user in users:
+            notification_service = NotificationService(db)
+            discount_percent = float(deal_data["discount_percent"])
+            current_price = float(deal_data["current_price"])
+            
+            for preference in preferences:
+                # Check if deal meets user's criteria
+                if not self._meets_deal_criteria(preference, discount_percent, current_price):
+                    continue
+                    
+                user = preference.user
+                
                 # Send email notification
                 await email_service.send_deal_notification(
                     to=user.email,
                     item_name=product.name,
                     category="E-commerce",
-                    price=float(deal_data["current_price"]),
+                    price=current_price,
                     provider=product.site,
-                    discount_percent=float(deal_data["discount_percent"]),
+                    discount_percent=discount_percent,
                     currency="₦"
                 )
                 
@@ -107,8 +120,25 @@ class EcommerceDealDetector(BaseDealDetector):
                 notification_service.notify_deal_alert(
                     user_id=user.id,
                     product_name=product.name,
-                    discount_percent=float(deal_data["discount_percent"])
+                    discount_percent=discount_percent
                 )
                 
         except Exception as e:
             logger.error(f"Failed to send deal notification: {e}")
+    
+    def _meets_deal_criteria(self, preference: DealPreference, discount_percent: float, current_price: float) -> bool:
+        """Check if deal meets user's criteria."""
+        # Check minimum discount
+        if discount_percent < float(preference.min_discount_percent):
+            return False
+            
+        # Check price threshold
+        if preference.max_price_threshold and current_price > float(preference.max_price_threshold):
+            return False
+            
+        # Check deal types (simplified - just check if percentage deals are enabled)
+        deal_types = preference.get_deal_types()
+        if "percentage" not in deal_types:
+            return False
+            
+        return True
