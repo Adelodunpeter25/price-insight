@@ -22,6 +22,7 @@ from app.ecommerce.routes.deal_preferences import router as deal_preferences_rou
 from app.ecommerce.routes.export import router as ecommerce_export_router
 from app.ecommerce.routes.price_analytics import router as price_analytics_router
 from app.ecommerce.routes.products import router as products_router
+from app.ecommerce.routes.watchlist import router as watchlist_router
 from app.real_estate.routes import alerts_router
 from app.real_estate.routes import deals_router as re_deals_router
 from app.real_estate.routes import properties_router
@@ -80,6 +81,7 @@ app.include_router(products_router)
 app.include_router(deals_router)
 app.include_router(deal_preferences_router)
 app.include_router(price_analytics_router)
+app.include_router(watchlist_router)
 app.include_router(travel_router)
 app.include_router(properties_router)
 app.include_router(re_deals_router)

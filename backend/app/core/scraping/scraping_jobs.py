@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 from app.core.database import get_db
 from app.core.scraping.scraper_manager import scraper_manager
+from app.ecommerce.services.watchlist_service import WatchlistService
 from app.travel.services.deal_detector import TravelDealDetector
 
 
@@ -82,6 +83,15 @@ class ScrapingJobScheduler:
             minute=0,
             id="comprehensive_scrape",
             name="Comprehensive Daily Scrape",
+        )
+        
+        # Watchlist alerts - every 30 minutes
+        self.scheduler.add_job(
+            self._check_watchlist_alerts_job,
+            "interval",
+            minutes=30,
+            id="check_watchlist_alerts",
+            name="Check Watchlist Price Alerts",
         )
 
     async def _scrape_ecommerce_job(self) -> None:
@@ -156,6 +166,18 @@ class ScrapingJobScheduler:
 
         except Exception as e:
             logger.error(f"Comprehensive scraping job failed: {e}")
+        finally:
+            db.close()
+    
+    async def _check_watchlist_alerts_job(self) -> None:
+        """Scheduled job for checking watchlist price alerts."""
+        logger.info("Starting watchlist alerts check")
+        try:
+            db = next(get_db())
+            await WatchlistService.check_watchlist_alerts(db)
+            logger.info("Watchlist alerts check completed")
+        except Exception as e:
+            logger.error(f"Watchlist alerts check failed: {e}")
         finally:
             db.close()
 

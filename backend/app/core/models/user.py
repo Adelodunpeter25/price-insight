@@ -1,6 +1,7 @@
 """User model."""
 
 from sqlalchemy import Boolean, Column, String
+from sqlalchemy.orm import relationship
 
 from app.core.models.base import BaseModel
 
@@ -15,6 +16,9 @@ class User(BaseModel):
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=True)
     is_verified = Column(Boolean, default=False, nullable=False, index=True)
+    
+    # Relationships
+    watchlists = relationship("Watchlist", back_populates="user")
 
     def __repr__(self) -> str:
         """String representation."""
