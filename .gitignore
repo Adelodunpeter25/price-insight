@@ -166,7 +166,7 @@ temp/
 # Docs
 .amazonq
 backend/implementation.md
-frontend.md
+ECOMMERCE_ENHANCEMENTS.md
 # Alembic
 alembic.ini
 
