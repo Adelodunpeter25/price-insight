@@ -5,6 +5,8 @@ from datetime import datetime
 from typing import Dict
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.jobstores.redis import RedisJobStore
+from apscheduler.executors.asyncio import AsyncIOExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -19,17 +21,66 @@ class ScrapingJobScheduler:
     """Scheduler for automated scraping jobs."""
 
     def __init__(self):
-        """Initialize scheduler."""
-        self.scheduler = AsyncIOScheduler()
+        """Initialize scheduler with Redis persistence."""
+        from app.core.config import settings
+        
+        # Configure job stores
+        jobstores = {
+            'default': RedisJobStore(
+                host=self._parse_redis_host(settings.redis_url),
+                port=self._parse_redis_port(settings.redis_url),
+                db=0,
+                jobs_key='apscheduler.jobs',
+                run_times_key='apscheduler.run_times'
+            )
+        }
+        
+        # Configure executors
+        executors = {
+            'default': AsyncIOExecutor()
+        }
+        
+        # Job defaults
+        job_defaults = {
+            'coalesce': True,  # Combine missed runs
+            'max_instances': 1,  # Only one instance per job
+            'misfire_grace_time': 300  # 5 minutes grace period
+        }
+        
+        self.scheduler = AsyncIOScheduler(
+            jobstores=jobstores,
+            executors=executors,
+            job_defaults=job_defaults
+        )
         self.is_running = False
+    
+    def _parse_redis_host(self, redis_url: str) -> str:
+        """Extract host from redis URL."""
+        # redis://localhost:6379 -> localhost
+        return redis_url.replace('redis://', '').split(':')[0]
+    
+    def _parse_redis_port(self, redis_url: str) -> int:
+        """Extract port from redis URL."""
+        # redis://localhost:6379 -> 6379
+        try:
+            return int(redis_url.split(':')[-1])
+        except:
+            return 6379
 
     def start(self):
-        """Start the scheduler."""
+        """Start the scheduler with persistent jobs."""
         if not self.is_running:
-            self._schedule_jobs()
+            # Only schedule jobs if they don't exist (prevents duplicates on restart)
+            existing_jobs = self.scheduler.get_jobs()
+            if not existing_jobs:
+                logger.info("Scheduling jobs for the first time")
+                self._schedule_jobs()
+            else:
+                logger.info(f"Resuming {len(existing_jobs)} existing jobs from Redis")
+            
             self.scheduler.start()
             self.is_running = True
-            logger.info("Scraping job scheduler started")
+            logger.info("Scraping job scheduler started with Redis persistence")
 
     def stop(self):
         """Stop the scheduler."""

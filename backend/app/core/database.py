@@ -7,7 +7,6 @@ from app.core.config import settings
 # Create async engine with optimized connection pooling
 engine = create_async_engine(
     settings.database_url,
-    echo=False,  # Disable SQL logging
     pool_size=20,  # Base connection pool size
     max_overflow=10,  # Allow 10 additional connections under load
     pool_pre_ping=True,  # Verify connections before using
