@@ -8,9 +8,8 @@ from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from app.core.deal_detection.base_detector import BaseDealDetector
-from app.core.services.background_tasks import background_tasks
-from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
+from app.core.tasks.email_tasks import send_deal_notification_task
 from app.core.models.user import User
 from app.ecommerce.services.price_analytics import PriceAnalytics
 
@@ -24,7 +23,7 @@ from app.ecommerce.models.product import Product
 class EcommerceDealDetector(BaseDealDetector):
     """Deal detector for e-commerce products."""
 
-    def get_items_for_detection(self, db: Session) -> List[Product]:
+    async def get_items_for_detection(self, db: Session) -> List[Product]:
         """Get active products for deal detection."""
         return (
             db.query(Product)
@@ -46,7 +45,7 @@ class EcommerceDealDetector(BaseDealDetector):
         """Get current price from product."""
         return item.current_price
 
-    def create_deal(self, db: Session, item: Product, deal_data: Dict) -> Optional[Deal]:
+    async def create_deal(self, db: Session, item: Product, deal_data: Dict) -> Optional[Deal]:
         """Create e-commerce deal record with enhanced analytics."""
         try:
             # Get price analytics for better deal description
@@ -127,9 +126,8 @@ class EcommerceDealDetector(BaseDealDetector):
                     
                 user = preference.user
                 
-                # Send email notification in background (non-blocking)
-                background_tasks.add_task(
-                    email_service.send_deal_notification,
+                # Send email via Celery (non-blocking with retry)
+                send_deal_notification_task.delay(
                     to=user.email,
                     item_name=product.name + extra_info,
                     category="E-commerce",

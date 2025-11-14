@@ -6,9 +6,8 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.core.services.background_tasks import background_tasks
-from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
+from app.core.tasks.email_tasks import send_price_alert_task
 from app.ecommerce.models.price_history import PriceHistory
 from app.ecommerce.models.product import Product
 from app.ecommerce.models.watchlist import Watchlist
@@ -208,9 +207,8 @@ class WatchlistService:
         try:
             user = watchlist.user
             
-            # Send email in background (non-blocking)
-            background_tasks.add_task(
-                email_service.send_price_alert,
+            # Send email via Celery (non-blocking with retry)
+            send_price_alert_task.delay(
                 to=user.email,
                 product_name=product.name,
                 old_price=target_price,
