@@ -4,14 +4,16 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.core.config import settings
 
-# Create async engine
+# Create async engine with optimized connection pooling
 engine = create_async_engine(
     settings.database_url,
     echo=False,  # Disable SQL logging
-    pool_size=20,
-    max_overflow=0,
-    pool_pre_ping=True,
-    pool_recycle=3600,
+    pool_size=20,  # Base connection pool size
+    max_overflow=10,  # Allow 10 additional connections under load
+    pool_pre_ping=True,  # Verify connections before using
+    pool_recycle=3600,  # Recycle connections after 1 hour
+    pool_timeout=30,  # Wait 30s for connection from pool
+    echo_pool=False,  # Disable pool logging
 )
 
 # Create async session maker

@@ -6,7 +6,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from app.core.scraping.scraper_factory import scraper_factory
 from app.ecommerce.models.product import Product as EcommerceProduct
@@ -72,9 +73,12 @@ class ScraperManager:
         
         return all_results
 
-    async def scrape_ecommerce_products(self, db: Session) -> int:
+    async def scrape_ecommerce_products(self, db: AsyncSession) -> int:
         """Scrape all tracked e-commerce products concurrently."""
-        products = db.query(EcommerceProduct).filter(EcommerceProduct.is_active).all()
+        result = await db.execute(
+            select(EcommerceProduct).where(EcommerceProduct.is_active == True)
+        )
+        products = result.scalars().all()
         
         if not products:
             logger.info("No e-commerce products to scrape")
@@ -92,18 +96,20 @@ class ScraperManager:
                 updated_count += await self._update_ecommerce_product(db, result)
         
         # Batch commit for better performance
-        db.commit()
+        await db.commit()
         logger.info(f"Updated {updated_count} e-commerce products in database")
         return updated_count
 
-    async def scrape_travel_deals(self, db: Session) -> int:
+    async def scrape_travel_deals(self, db: AsyncSession) -> int:
         """Scrape all tracked travel deals."""
         # Scrape flights
-        flights = db.query(Flight).filter(Flight.is_active).all()
+        result = await db.execute(select(Flight).where(Flight.is_active == True))
+        flights = result.scalars().all()
         flight_urls = [flight.url for flight in flights if flight.url]
 
         # Scrape hotels
-        hotels = db.query(Hotel).filter(Hotel.is_active).all()
+        result = await db.execute(select(Hotel).where(Hotel.is_active == True))
+        hotels = result.scalars().all()
         hotel_urls = [hotel.url for hotel in hotels if hotel.url]
 
         all_urls = flight_urls + hotel_urls
@@ -116,13 +122,14 @@ class ScraperManager:
             if result:
                 updated_count += await self._update_travel_deal(db, result)
 
-        db.commit()
+        await db.commit()
         logger.info(f"Updated {updated_count} travel deals")
         return updated_count
 
-    async def scrape_real_estate_properties(self, db: Session) -> int:
+    async def scrape_real_estate_properties(self, db: AsyncSession) -> int:
         """Scrape all tracked real estate properties."""
-        properties = db.query(Property).filter(Property.is_active).all()
+        result = await db.execute(select(Property).where(Property.is_active == True))
+        properties = result.scalars().all()
         urls = [prop.url for prop in properties if prop.url]
 
         logger.info(f"Scraping {len(urls)} real estate properties")
@@ -133,13 +140,14 @@ class ScraperManager:
             if result:
                 updated_count += await self._update_property(db, result)
 
-        db.commit()
+        await db.commit()
         logger.info(f"Updated {updated_count} properties")
         return updated_count
 
-    async def scrape_utility_services(self, db: Session) -> int:
+    async def scrape_utility_services(self, db: AsyncSession) -> int:
         """Scrape all tracked utility services."""
-        services = db.query(UtilityService).filter(UtilityService.is_active).all()
+        result = await db.execute(select(UtilityService).where(UtilityService.is_active == True))
+        services = result.scalars().all()
         urls = [service.url for service in services if service.url]
 
         logger.info(f"Scraping {len(urls)} utility services")
@@ -150,11 +158,11 @@ class ScraperManager:
             if result:
                 updated_count += await self._update_utility_service(db, result)
 
-        db.commit()
+        await db.commit()
         logger.info(f"Updated {updated_count} utility services")
         return updated_count
 
-    async def scrape_all_categories(self, db: Session) -> Dict[str, int]:
+    async def scrape_all_categories(self, db: AsyncSession) -> Dict[str, int]:
         """Scrape all categories and return update counts."""
         logger.info("Starting comprehensive scraping of all categories")
 
@@ -173,10 +181,13 @@ class ScraperManager:
 
         return results
 
-    async def _update_ecommerce_product(self, db: Session, data: Dict[str, Any]) -> int:
+    async def _update_ecommerce_product(self, db: AsyncSession, data: Dict[str, Any]) -> int:
         """Update e-commerce product with scraped data."""
         try:
-            product = db.query(EcommerceProduct).filter(EcommerceProduct.url == data["url"]).first()
+            result = await db.execute(
+                select(EcommerceProduct).where(EcommerceProduct.url == data["url"])
+            )
+            product = result.scalar_one_or_none()
 
             if not product:
                 return 0
@@ -196,11 +207,12 @@ class ScraperManager:
             logger.error(f"Failed to update e-commerce product: {e}")
             return 0
 
-    async def _update_travel_deal(self, db: Session, data: Dict[str, Any]) -> int:
+    async def _update_travel_deal(self, db: AsyncSession, data: Dict[str, Any]) -> int:
         """Update travel deal with scraped data and record price history."""
         try:
             # Try to find flight first
-            flight = db.query(Flight).filter(Flight.url == data["url"]).first()
+            result = await db.execute(select(Flight).where(Flight.url == data["url"]))
+            flight = result.scalar_one_or_none()
             if flight:
                 old_price = flight.price
                 if data.get("price") and data["price"] != old_price:
@@ -218,7 +230,8 @@ class ScraperManager:
                 return 1
 
             # Try to find hotel
-            hotel = db.query(Hotel).filter(Hotel.url == data["url"]).first()
+            result = await db.execute(select(Hotel).where(Hotel.url == data["url"]))
+            hotel = result.scalar_one_or_none()
             if hotel:
                 old_price = hotel.price_per_night
                 if data.get("price") and data["price"] != old_price:
@@ -241,10 +254,11 @@ class ScraperManager:
             logger.error(f"Failed to update travel deal: {e}")
             return 0
 
-    async def _update_property(self, db: Session, data: Dict[str, Any]) -> int:
+    async def _update_property(self, db: AsyncSession, data: Dict[str, Any]) -> int:
         """Update property with scraped data."""
         try:
-            property_obj = db.query(Property).filter(Property.url == data["url"]).first()
+            result = await db.execute(select(Property).where(Property.url == data["url"]))
+            property_obj = result.scalar_one_or_none()
             if not property_obj:
                 return 0
 
@@ -260,10 +274,11 @@ class ScraperManager:
             logger.error(f"Failed to update property: {e}")
             return 0
 
-    async def _update_utility_service(self, db: Session, data: Dict[str, Any]) -> int:
+    async def _update_utility_service(self, db: AsyncSession, data: Dict[str, Any]) -> int:
         """Update utility service with scraped data."""
         try:
-            service = db.query(UtilityService).filter(UtilityService.url == data["url"]).first()
+            result = await db.execute(select(UtilityService).where(UtilityService.url == data["url"]))
+            service = result.scalar_one_or_none()
 
             if not service:
                 return 0
