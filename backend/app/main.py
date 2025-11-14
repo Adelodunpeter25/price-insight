@@ -12,6 +12,7 @@ from app.core.logging import setup_logging
 from app.core.routes.auth import router as auth_router
 from app.core.routes.health import router as health_router
 from app.core.routes.monitoring import router as monitoring_router
+from app.core.routes.notifications import router as notifications_router
 from app.core.routes.scraping import router as scraping_router
 from app.core.routes.status import router as status_router
 from app.core.scheduler import scheduler_manager
@@ -71,6 +72,7 @@ app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(status_router)
 app.include_router(monitoring_router)
+app.include_router(notifications_router)
 app.include_router(scraping_router)
 app.include_router(products_router)
 app.include_router(deals_router)

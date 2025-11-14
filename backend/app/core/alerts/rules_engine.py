@@ -9,7 +9,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models.alert import AlertHistory, AlertRule
-from app.ecommerce.models import PriceHistory
+from app.core.models.user import User
+from app.core.services.email_service import email_service
+from app.core.services.notification_service import NotificationService
+from app.ecommerce.models import PriceHistory, Product
 from app.utils.helpers import calculate_discount_percentage
 
 
@@ -135,6 +138,9 @@ class AlertRulesEngine:
         await self.db.commit()
         await self.db.refresh(alert_history)
 
+        # Send email notification
+        await self._send_alert_email(alert_history)
+
         logger.info(f"Alert triggered: {message}")
         return alert_history
 
@@ -177,3 +183,54 @@ class AlertRulesEngine:
 
         logger.info(f"Created alert rule: {rule_type} for product {product_id}")
         return rule
+
+    async def _send_alert_email(self, alert_history: AlertHistory) -> None:
+        """Send email and in-app notifications for triggered alert."""
+        try:
+            # Get product details
+            product_stmt = select(Product).where(Product.id == alert_history.product_id)
+            product_result = await self.db.execute(product_stmt)
+            product = product_result.scalar_one_or_none()
+            
+            if not product:
+                return
+                
+            # Get users (simplified - in real app, get users who subscribed to this product)
+            user_stmt = select(User).where(User.is_active)
+            user_result = await self.db.execute(user_stmt)
+            users = list(user_result.scalars().all())
+            
+            # Convert async session to sync for notification service
+            from app.core.database import get_db
+            sync_db = next(get_db())
+            notification_service = NotificationService(sync_db)
+            
+            old_price = float(product.current_price or 0) + 100  # Simulate old price
+            new_price = float(alert_history.trigger_value)
+            
+            for user in users:
+                # Send email notification
+                await email_service.send_price_alert(
+                    to=user.email,
+                    product_name=product.name,
+                    old_price=old_price,
+                    new_price=new_price,
+                    currency="₦"
+                )
+                
+                # Send in-app notification
+                notification_service.notify_price_drop(
+                    user_id=user.id,
+                    product_name=product.name,
+                    old_price=old_price,
+                    new_price=new_price
+                )
+                
+            sync_db.close()
+            
+            # Mark notification as sent
+            alert_history.notification_sent = True
+            await self.db.commit()
+            
+        except Exception as e:
+            logger.error(f"Failed to send alert notifications: {e}")

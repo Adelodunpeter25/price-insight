@@ -7,9 +7,12 @@ from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-logger = logging.getLogger(__name__)
-
 from app.core.deal_detection.base_detector import BaseDealDetector
+from app.core.services.email_service import email_service
+from app.core.services.notification_service import NotificationService
+from app.core.models.user import User
+
+logger = logging.getLogger(__name__)
 from app.ecommerce.models.deal import Deal
 from app.ecommerce.models.price_history import PriceHistory
 from app.ecommerce.models.product import Product
@@ -71,8 +74,41 @@ class EcommerceDealDetector(BaseDealDetector):
                 )
                 db.add(deal)
                 db.flush()
+                
+                # Send email notification
+                await self._send_deal_notification(db, item, deal_data)
+                
                 return deal
 
         except Exception as e:
             logger.error(f"Failed to create e-commerce deal: {e}")
             return None
+
+    async def _send_deal_notification(self, db: Session, product: Product, deal_data: Dict) -> None:
+        """Send email and in-app notifications for new deal."""
+        try:
+            # Get users who might be interested
+            users = db.query(User).filter(User.is_active).all()
+            notification_service = NotificationService(db)
+            
+            for user in users:
+                # Send email notification
+                await email_service.send_deal_notification(
+                    to=user.email,
+                    item_name=product.name,
+                    category="E-commerce",
+                    price=float(deal_data["current_price"]),
+                    provider=product.site,
+                    discount_percent=float(deal_data["discount_percent"]),
+                    currency="₦"
+                )
+                
+                # Send in-app notification
+                notification_service.notify_deal_alert(
+                    user_id=user.id,
+                    product_name=product.name,
+                    discount_percent=float(deal_data["discount_percent"])
+                )
+                
+        except Exception as e:
+            logger.error(f"Failed to send deal notification: {e}")
