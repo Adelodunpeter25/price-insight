@@ -12,8 +12,10 @@ from app.core.logging import setup_logging
 from app.core.routes.auth import router as auth_router
 from app.core.routes.health import router as health_router
 from app.core.routes.monitoring import router as monitoring_router
+from app.core.routes.scraping import router as scraping_router
 from app.core.routes.status import router as status_router
 from app.core.scheduler import scheduler_manager
+from app.core.scraping.scraping_jobs import scraping_scheduler
 from app.ecommerce.routes.deals import router as deals_router
 from app.ecommerce.routes.export import router as ecommerce_export_router
 from app.ecommerce.routes.products import router as products_router
@@ -38,8 +40,10 @@ async def lifespan(app: FastAPI):
     setup_logging()
     await scheduler_manager.start()
     await job_manager.register_all_jobs()
+    scraping_scheduler.start()
     yield
     # Shutdown
+    scraping_scheduler.stop()
     await scheduler_manager.shutdown()
     await engine.dispose()
 
@@ -67,6 +71,7 @@ app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(status_router)
 app.include_router(monitoring_router)
+app.include_router(scraping_router)
 app.include_router(products_router)
 app.include_router(deals_router)
 app.include_router(travel_router)

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from app.ecommerce.services.scraper_base import BaseScraper
+from app.core.scraping.base_scraper import BaseScraper
 from app.utils.helpers import extract_price_from_text
 
 
@@ -31,13 +31,13 @@ class GenericScraper(BaseScraper):
 
         try:
             # Extract product name
-            name = self._extract_by_selectors(soup, self.selectors.get("name", []))
+            name = self.extract_text_by_selectors(soup, self.selectors.get("name", []))
             if not name:
                 logger.warning(f"Could not extract product name from {url}")
                 return None
 
             # Extract price
-            price_text = self._extract_by_selectors(soup, self.selectors.get("price", []))
+            price_text = self.extract_price_by_selectors(soup, self.selectors.get("price", []))
             if not price_text:
                 logger.warning(f"Could not extract price from {url}")
                 return None
@@ -49,14 +49,12 @@ class GenericScraper(BaseScraper):
 
             # Extract availability (optional)
             availability = (
-                self._extract_by_selectors(soup, self.selectors.get("availability", []))
+                self.extract_text_by_selectors(soup, self.selectors.get("availability", []))
                 or "Unknown"
             )
 
             # Determine site from URL
-            from urllib.parse import urlparse
-
-            site = urlparse(url).netloc.replace("www.", "")
+            site = self.get_site_name(url)
 
             return {
                 "name": name,
@@ -64,22 +62,14 @@ class GenericScraper(BaseScraper):
                 "url": url,
                 "availability": availability,
                 "site": site,
-                "currency": "NGN",  # Default
+                "currency": "NGN"
             }
 
         except Exception as e:
             logger.error(f"Error extracting data from {url}: {e}")
             return None
 
-    def _extract_by_selectors(self, soup, selectors: List[str]) -> Optional[str]:
-        """Try multiple selectors and return first match."""
-        for selector in selectors:
-            element = soup.select_one(selector)
-            if element:
-                text = element.get_text(strip=True)
-                if text:
-                    return text
-        return None
+
 
 
 # Common selector configurations for popular sites

@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 from loguru import logger
 
-from app.ecommerce.services.scraper_base import BaseScraper
+from app.core.scraping.base_scraper import BaseScraper
 from app.utils.helpers import extract_price_from_text
 
 
@@ -25,14 +25,15 @@ class AmazonScraper(BaseScraper):
 
         try:
             # Extract product name
-            name_selectors = ["#productTitle", ".product-title", "h1.a-size-large"]
-            name = None
-            for selector in name_selectors:
-                element = soup.select_one(selector)
-                if element:
-                    name = element.get_text(strip=True)
-                    break
-
+            name_selectors = [
+                "#productTitle", 
+                ".product-title", 
+                "h1.a-size-large",
+                "h1[data-automation-id='product-title']",
+                ".pdp-product-name"
+            ]
+            name = self.extract_text_by_selectors(soup, name_selectors)
+            
             if not name:
                 logger.warning(f"Could not extract product name from {url}")
                 return None
@@ -44,38 +45,39 @@ class AmazonScraper(BaseScraper):
                 ".a-price .a-offscreen",
                 "#priceblock_dealprice",
                 "#priceblock_ourprice",
+                ".a-price-range",
+                "[data-automation-id='product-price']",
+                ".notranslate"
             ]
-
-            price = None
-            for selector in price_selectors:
-                element = soup.select_one(selector)
-                if element:
-                    price_text = element.get_text(strip=True)
-                    price = extract_price_from_text(price_text)
-                    if price:
-                        break
-
-            if not price:
+            
+            price_text = self.extract_price_by_selectors(soup, price_selectors)
+            if not price_text:
                 logger.warning(f"Could not extract price from {url}")
+                return None
+                
+            price = extract_price_from_text(price_text)
+            if not price:
+                logger.warning(f"Could not parse price from text: {price_text}")
                 return None
 
             # Extract availability
-            availability_selectors = ["#availability span", ".a-color-success", ".a-color-state"]
-
-            availability = "Unknown"
-            for selector in availability_selectors:
-                element = soup.select_one(selector)
-                if element:
-                    availability = element.get_text(strip=True)
-                    break
+            availability_selectors = [
+                "#availability span", 
+                ".a-color-success", 
+                ".a-color-state",
+                "#availability .a-color-state",
+                "[data-automation-id='availability']"
+            ]
+            
+            availability = self.extract_text_by_selectors(soup, availability_selectors) or "Unknown"
 
             return {
                 "name": name,
                 "price": price,
                 "url": url,
                 "availability": availability,
-                "site": "amazon",
-                "currency": "NGN",  # Default, could be extracted
+                "site": self.get_site_name(url),
+                "currency": "NGN"
             }
 
         except Exception as e:

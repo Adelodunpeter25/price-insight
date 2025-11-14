@@ -1,110 +1,95 @@
 """Hotel price scraper."""
 
-from decimal import Decimal
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
-from app.ecommerce.services.scraper_base import BaseScraper
+from loguru import logger
+
+from app.core.scraping.base_scraper import BaseScraper
+from app.utils.helpers import extract_price_from_text
 
 
 class HotelScraper(BaseScraper):
     """Generic hotel price scraper."""
 
-    def extract_data(self, soup, url: str) -> Optional[Dict]:
-        """Extract hotel data from HTML."""
+    async def extract_data(self, url: str) -> Optional[Dict[str, Any]]:
+        """Extract hotel data from URL."""
+        html = await self.fetch(url)
+        if not html:
+            return None
+            
+        soup = self.parse(html)
+        
         try:
-            # Generic selectors for common travel sites
+            # Generic selectors for common hotel booking sites
+            name_selectors = [
+                ".hotel-name",
+                ".property-name",
+                ".accommodation-name",
+                "h1",
+                ".title",
+                "[data-hotel-name]",
+                ".hotel-title"
+            ]
+            
             price_selectors = [
                 ".price",
                 ".rate",
                 ".cost",
                 "[data-price]",
                 ".amount",
+                ".hotel-price",
                 ".room-price",
                 ".nightly-rate",
-                ".hotel-price",
-                ".total-price",
+                ".price-per-night",
+                ".total-price"
             ]
 
+            location_selectors = [
+                ".location",
+                ".address",
+                ".hotel-location",
+                "[data-location]",
+                ".property-location",
+                ".destination"
+            ]
+            
             rating_selectors = [
                 ".rating",
-                ".score",
                 ".stars",
-                "[data-rating]",
                 ".hotel-rating",
-                ".review-score",
+                "[data-rating]",
+                ".star-rating"
             ]
 
-            price_per_night = self._extract_price(soup, price_selectors)
-            rating = self._extract_rating(soup, rating_selectors)
-
-            if not price_per_night:
+            name = self.extract_text_by_selectors(soup, name_selectors)
+            if not name:
+                logger.warning(f"Could not extract hotel name from {url}")
                 return None
 
+            price_text = self.extract_price_by_selectors(soup, price_selectors)
+            if not price_text:
+                logger.warning(f"Could not extract price from {url}")
+                return None
+                
+            price = extract_price_from_text(price_text)
+            if not price:
+                logger.warning(f"Could not parse price from text: {price_text}")
+                return None
+
+            location = self.extract_text_by_selectors(soup, location_selectors) or "Unknown"
+            rating = self.extract_text_by_selectors(soup, rating_selectors) or "Not rated"
+
             return {
-                "price_per_night": price_per_night,
-                "total_price": price_per_night,  # Will be calculated based on nights
+                "name": f"Hotel: {name}",
+                "price": price,
+                "hotel_name": name,
+                "location": location,
                 "rating": rating,
-                "currency": "NGN",  # Will be normalized by base scraper
-                "site": self._get_site_name(url),
+                "currency": "NGN",
+                "site": self.get_site_name(url),
                 "url": url,
             }
 
         except Exception as e:
-            self.logger.error(f"Failed to extract hotel data: {e}")
+            logger.error(f"Failed to extract hotel data from {url}: {e}")
             return None
-
-    def _extract_price(self, soup, selectors) -> Optional[Decimal]:
-        """Extract price from soup using selectors."""
-        for selector in selectors:
-            elements = soup.select(selector)
-            for element in elements:
-                text = element.get_text(strip=True)
-                price = self._parse_price(text)
-                if price:
-                    return price
-        return None
-
-    def _extract_rating(self, soup, selectors) -> Optional[Decimal]:
-        """Extract rating from soup using selectors."""
-        for selector in selectors:
-            element = soup.select_one(selector)
-            if element:
-                text = element.get_text(strip=True)
-                rating = self._parse_rating(text)
-                if rating:
-                    return rating
-        return None
-
-    def _parse_price(self, text: str) -> Optional[Decimal]:
-        """Parse price from text."""
-        import re
-
-        # Remove currency symbols and extract numbers
-        price_match = re.search(r"[\d,]+\.?\d*", text.replace(",", ""))
-        if price_match:
-            try:
-                return Decimal(price_match.group())
-            except:
-                pass
-        return None
-
-    def _parse_rating(self, text: str) -> Optional[Decimal]:
-        """Parse rating from text."""
-        import re
-
-        # Extract rating (usually 1-5 or 1-10)
-        rating_match = re.search(r"(\d+\.?\d*)", text)
-        if rating_match:
-            try:
-                rating = Decimal(rating_match.group(1))
-                if 0 <= rating <= 10:
-                    return rating
-            except:
-                pass
-        return None
-
-    def _get_site_name(self, url: str) -> str:
-        """Extract site name from URL."""
-        from urllib.parse import urlparse
-
-        return urlparse(url).netloc.replace("www.", "")
