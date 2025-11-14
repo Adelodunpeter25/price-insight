@@ -20,9 +20,10 @@ from app.utilities.models.service import UtilityService
 class ScraperManager:
     """Centralized manager for all scraping operations."""
 
-    def __init__(self, max_concurrent: int = 5):
-        """Initialize scraper manager."""
+    def __init__(self, max_concurrent: int = 10, batch_size: int = 50):
+        """Initialize scraper manager with concurrency and batching."""
         self.max_concurrent = max_concurrent
+        self.batch_size = batch_size
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
     async def scrape_url(self, url: str, category: str = "auto") -> Optional[Dict[str, Any]]:
@@ -44,35 +45,55 @@ class ScraperManager:
     async def scrape_multiple(
         self, urls: List[str], category: str = "auto"
     ) -> List[Dict[str, Any]]:
-        """Scrape multiple URLs concurrently."""
-        tasks = [self.scrape_url(url, category) for url in urls]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Filter out None results and exceptions
-        valid_results = []
-        for result in results:
-            if isinstance(result, dict):
-                valid_results.append(result)
-            elif isinstance(result, Exception):
-                logger.error(f"Scraping task failed: {result}")
-
-        return valid_results
+        """Scrape multiple URLs concurrently with batching."""
+        if not urls:
+            return []
+        
+        all_results = []
+        
+        # Process in batches to avoid overwhelming memory
+        for i in range(0, len(urls), self.batch_size):
+            batch = urls[i:i + self.batch_size]
+            logger.info(f"Processing batch {i//self.batch_size + 1}: {len(batch)} URLs")
+            
+            tasks = [self.scrape_url(url, category) for url in batch]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            # Filter out None results and exceptions
+            for result in results:
+                if isinstance(result, dict):
+                    all_results.append(result)
+                elif isinstance(result, Exception):
+                    logger.error(f"Scraping task failed: {result}")
+            
+            # Small delay between batches
+            if i + self.batch_size < len(urls):
+                await asyncio.sleep(2)
+        
+        return all_results
 
     async def scrape_ecommerce_products(self, db: Session) -> int:
-        """Scrape all tracked e-commerce products."""
+        """Scrape all tracked e-commerce products concurrently."""
         products = db.query(EcommerceProduct).filter(EcommerceProduct.is_active).all()
+        
+        if not products:
+            logger.info("No e-commerce products to scrape")
+            return 0
+        
         urls = [product.url for product in products]
-
-        logger.info(f"Scraping {len(urls)} e-commerce products")
+        logger.info(f"Scraping {len(urls)} e-commerce products with {self.max_concurrent} concurrent workers")
+        
         results = await self.scrape_multiple(urls, "ecommerce")
+        logger.info(f"Successfully scraped {len(results)}/{len(urls)} products")
 
         updated_count = 0
         for result in results:
             if result:
                 updated_count += await self._update_ecommerce_product(db, result)
-
+        
+        # Batch commit for better performance
         db.commit()
-        logger.info(f"Updated {updated_count} e-commerce products")
+        logger.info(f"Updated {updated_count} e-commerce products in database")
         return updated_count
 
     async def scrape_travel_deals(self, db: Session) -> int:
@@ -260,5 +281,10 @@ class ScraperManager:
             return 0
 
 
-# Global manager instance
-scraper_manager = ScraperManager()
+# Global manager instance with configurable settings
+from app.core.config import settings
+
+scraper_manager = ScraperManager(
+    max_concurrent=settings.scraper_max_concurrent,
+    batch_size=settings.scraper_batch_size
+)

@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     # Email service (Resend)
     resend_api_key: str = ""
     from_email: str = "noreply@priceinsight.ng"
+    
+    # Scraping settings
+    scraper_max_concurrent: int = 10
+    scraper_batch_size: int = 50
+    scraper_rate_limit: float = 1.0  # seconds between requests
 
     class Config:
         env_file = ".env"
