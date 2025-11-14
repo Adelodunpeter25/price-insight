@@ -6,6 +6,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from app.core.cache import cached
+from app.core.constants import (
+    CACHE_TTL_PRICE_HISTORY,
+    CACHE_TTL_PRICE_STATS,
+    CACHE_TTL_PRICE_TREND,
+    CACHE_TTL_PRODUCT_ANALYTICS,
+)
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.models.user import User
@@ -23,7 +30,8 @@ router = APIRouter(prefix="/analytics", tags=["Price Analytics"])
 
 
 @router.get("/products/{product_id}", response_model=PriceAnalyticsResponse)
-def get_product_analytics(
+@cached(ttl=CACHE_TTL_PRODUCT_ANALYTICS, key_prefix="analytics:product")
+async def get_product_analytics(
     product_id: int,
     days: int = Query(30, ge=1, le=365, description="Days of history to analyze"),
     db: Session = Depends(get_db),
@@ -65,7 +73,8 @@ def get_product_analytics(
 
 
 @router.get("/products/{product_id}/stats")
-def get_price_stats(
+@cached(ttl=CACHE_TTL_PRICE_STATS, key_prefix="price:stats")
+async def get_price_stats(
     product_id: int,
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
@@ -84,7 +93,8 @@ def get_price_stats(
 
 
 @router.get("/products/{product_id}/trend")
-def get_price_trend(
+@cached(ttl=CACHE_TTL_PRICE_TREND, key_prefix="price:trend")
+async def get_price_trend(
     product_id: int,
     days: int = Query(7, ge=1, le=90),
     db: Session = Depends(get_db),
@@ -105,7 +115,8 @@ def get_price_trend(
 
 
 @router.get("/products/{product_id}/history", response_model=List[PricePoint])
-def get_price_history(
+@cached(ttl=CACHE_TTL_PRICE_HISTORY, key_prefix="price:history")
+async def get_price_history(
     product_id: int,
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),

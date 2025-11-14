@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.cache import invalidate_cache
 from app.core.deps import get_current_user, get_database_session
 from app.core.models.user import User
 from app.ecommerce.models import Product
@@ -40,6 +41,8 @@ async def create_product(
             site=product_data.site,
             category=product_data.category,
         )
+        invalidate_cache("analytics")
+        invalidate_cache("dashboard")
         return ProductResponse.model_validate(product)
 
     except Exception as e:
@@ -125,6 +128,9 @@ async def update_product(
 
     await db.commit()
     await db.refresh(product)
+    
+    invalidate_cache("analytics")
+    invalidate_cache("price")
 
     return ProductResponse.model_validate(product)
 
@@ -150,5 +156,8 @@ async def delete_product(
     product.is_tracked = False
 
     await db.commit()
+    
+    invalidate_cache("analytics")
+    invalidate_cache("dashboard")
 
     return None

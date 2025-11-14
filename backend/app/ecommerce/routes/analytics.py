@@ -5,6 +5,15 @@ import logging
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.core.cache import cached, invalidate_cache
+from app.core.constants import (
+    CACHE_TTL_ANALYTICS_MOST_TRACKED,
+    CACHE_TTL_ANALYTICS_PRICE_DROPS,
+    CACHE_TTL_ANALYTICS_RETAILERS,
+    CACHE_TTL_ANALYTICS_SAVINGS,
+    CACHE_TTL_GLOBAL_DASHBOARD,
+    CACHE_TTL_USER_DASHBOARD,
+)
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.models.user import User
@@ -24,7 +33,8 @@ router = APIRouter(prefix="/analytics/dashboard", tags=["Analytics Dashboard"])
 
 
 @router.get("/user", response_model=UserDashboard)
-def get_user_dashboard(
+@cached(ttl=CACHE_TTL_USER_DASHBOARD, key_prefix="dashboard:user")
+async def get_user_dashboard(
     days: int = Query(30, ge=1, le=365, description="Days to analyze"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -35,7 +45,8 @@ def get_user_dashboard(
 
 
 @router.get("/global", response_model=GlobalDashboard)
-def get_global_dashboard(
+@cached(ttl=CACHE_TTL_GLOBAL_DASHBOARD, key_prefix="dashboard:global")
+async def get_global_dashboard(
     days: int = Query(30, ge=1, le=365, description="Days to analyze"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -46,7 +57,8 @@ def get_global_dashboard(
 
 
 @router.get("/savings", response_model=SavingsStats)
-def get_savings_stats(
+@cached(ttl=CACHE_TTL_ANALYTICS_SAVINGS, key_prefix="analytics:savings")
+async def get_savings_stats(
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -57,7 +69,8 @@ def get_savings_stats(
 
 
 @router.get("/most-tracked")
-def get_most_tracked(
+@cached(ttl=CACHE_TTL_ANALYTICS_MOST_TRACKED, key_prefix="analytics:most_tracked")
+async def get_most_tracked(
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -71,7 +84,8 @@ def get_most_tracked(
 
 
 @router.get("/retailers")
-def get_best_retailers(
+@cached(ttl=CACHE_TTL_ANALYTICS_RETAILERS, key_prefix="analytics:retailers")
+async def get_best_retailers(
     days: int = Query(30, ge=1, le=365),
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
@@ -87,7 +101,8 @@ def get_best_retailers(
 
 
 @router.get("/price-drops", response_model=PriceDropStats)
-def get_price_drops(
+@cached(ttl=CACHE_TTL_ANALYTICS_PRICE_DROPS, key_prefix="analytics:price_drops")
+async def get_price_drops(
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
