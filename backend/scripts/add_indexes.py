@@ -24,7 +24,10 @@ async def add_indexes():
         "CREATE INDEX IF NOT EXISTS idx_deals_active_dates ON deals(deal_start_date, deal_end_date)",
         "CREATE INDEX IF NOT EXISTS idx_deals_discount ON deals(discount_percent DESC)",
         
-
+        # Watchlists - queried by user_id and product_id
+        "CREATE INDEX IF NOT EXISTS idx_watchlists_user_product ON watchlists(user_id, product_id)",
+        "CREATE INDEX IF NOT EXISTS idx_watchlists_user_id ON watchlists(user_id)",
+        "CREATE INDEX IF NOT EXISTS idx_watchlists_product_id ON watchlists(product_id)",
         
         # Alert rules - queried by product_id and rule_type
         "CREATE INDEX IF NOT EXISTS idx_alert_rules_product_type ON alert_rules(product_id, rule_type)",
