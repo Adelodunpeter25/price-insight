@@ -1,0 +1,1 @@
+"""Core deal detection functionality."""

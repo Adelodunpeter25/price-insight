@@ -12,6 +12,7 @@ from app.core.scraping.scraper_factory import scraper_factory
 from app.ecommerce.models.product import Product as EcommerceProduct
 from app.travel.models.flight import Flight
 from app.travel.models.hotel import Hotel
+from app.travel.models.price_history import TravelPriceHistory
 from app.real_estate.models.property import Property
 from app.utilities.models.service import UtilityService
 
@@ -175,22 +176,42 @@ class ScraperManager:
             return 0
 
     async def _update_travel_deal(self, db: Session, data: Dict[str, Any]) -> int:
-        """Update travel deal with scraped data."""
+        """Update travel deal with scraped data and record price history."""
         try:
             # Try to find flight first
             flight = db.query(Flight).filter(Flight.url == data["url"]).first()
             if flight:
-                if data.get("price"):
+                old_price = flight.price
+                if data.get("price") and data["price"] != old_price:
                     flight.price = data["price"]
-                flight.last_updated = datetime.utcnow()
+                    flight.last_updated = datetime.utcnow()
+                    
+                    # Record price history
+                    price_history = TravelPriceHistory(
+                        flight_id=flight.id,
+                        price=data["price"],
+                        currency=data.get("currency", "NGN"),
+                        source="scraper"
+                    )
+                    db.add(price_history)
                 return 1
                 
             # Try to find hotel
             hotel = db.query(Hotel).filter(Hotel.url == data["url"]).first()
             if hotel:
-                if data.get("price"):
+                old_price = hotel.price_per_night
+                if data.get("price") and data["price"] != old_price:
                     hotel.price_per_night = data["price"]
-                hotel.last_updated = datetime.utcnow()
+                    hotel.last_updated = datetime.utcnow()
+                    
+                    # Record price history
+                    price_history = TravelPriceHistory(
+                        hotel_id=hotel.id,
+                        price=data["price"],
+                        currency=data.get("currency", "NGN"),
+                        source="scraper"
+                    )
+                    db.add(price_history)
                 return 1
                 
             return 0

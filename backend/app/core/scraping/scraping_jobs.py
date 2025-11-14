@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.scraping.scraper_manager import scraper_manager
+from app.travel.services.deal_detector import TravelDealDetector
 
 
 class ScrapingJobScheduler:
@@ -96,14 +97,25 @@ class ScrapingJobScheduler:
             db.close()
 
     async def _scrape_travel_job(self):
-        """Scheduled job for travel scraping."""
+        """Scheduled job for travel scraping and deal detection."""
         logger.info("Starting scheduled travel scraping")
         try:
             db = next(get_db())
+            
+            # Scrape travel deals
             updated_count = await scraper_manager.scrape_travel_deals(db)
             logger.info(f"Travel scraping completed: {updated_count} deals updated")
+            
+            # Run deal detection
+            deal_detector = TravelDealDetector()
+            detected_deals = deal_detector.detect_deals(db)
+            logger.info(f"Travel deal detection completed: {len(detected_deals)} deals detected")
+            
+            db.commit()
+            
         except Exception as e:
             logger.error(f"Travel scraping job failed: {e}")
+            db.rollback()
         finally:
             db.close()
 
