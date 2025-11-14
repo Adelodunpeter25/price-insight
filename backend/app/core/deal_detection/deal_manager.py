@@ -2,7 +2,9 @@
 
 from typing import Dict, List
 from sqlalchemy.orm import Session
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.ecommerce.services.deal_detector import EcommerceDealDetector
 from app.travel.services.deal_detector import TravelDealDetector

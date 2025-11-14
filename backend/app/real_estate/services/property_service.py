@@ -4,7 +4,9 @@ import json
 from decimal import Decimal
 from typing import List, Optional
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload

@@ -6,7 +6,9 @@ from typing import Any, Dict, Optional
 
 import httpx
 from bs4 import BeautifulSoup
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.utils.currency import currency_converter
 from app.utils.helpers import validate_url

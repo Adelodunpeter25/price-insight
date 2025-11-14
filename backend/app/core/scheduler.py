@@ -3,7 +3,9 @@
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SchedulerManager:

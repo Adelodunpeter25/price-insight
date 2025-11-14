@@ -2,7 +2,9 @@
 
 from typing import Dict, List
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.database import AsyncSessionLocal
 from app.real_estate.models import Property

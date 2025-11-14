@@ -4,7 +4,9 @@ import time
 from datetime import datetime
 from typing import Dict
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.job_manager import job_manager
 from app.core.scheduler import scheduler_manager

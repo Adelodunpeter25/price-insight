@@ -3,7 +3,9 @@
 from decimal import Decimal
 from typing import List, Optional
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.alerts.rules_engine import AlertRulesEngine

@@ -4,7 +4,9 @@ import os
 from datetime import datetime
 from typing import List, Set
 
-from loguru import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.models.alert import AlertHistory
 
