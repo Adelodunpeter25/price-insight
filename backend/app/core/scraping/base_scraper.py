@@ -10,11 +10,10 @@ from urllib.parse import urlparse
 import httpx
 from bs4 import BeautifulSoup
 
-
-logger = logging.getLogger(__name__)
-
 from app.utils.currency import currency_converter
 from app.utils.helpers import validate_url
+
+logger = logging.getLogger(__name__)
 
 
 class BaseScraper(ABC):
@@ -32,7 +31,7 @@ class BaseScraper(ABC):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         ]
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "BaseScraper":
         """Async context manager entry."""
         self.session = httpx.AsyncClient(
             timeout=self.timeout,
@@ -41,7 +40,7 @@ class BaseScraper(ABC):
         )
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         """Async context manager exit."""
         if self.session:
             await self.session.aclose()
@@ -127,7 +126,7 @@ class BaseScraper(ABC):
         """Extract site name from URL."""
         try:
             return urlparse(url).netloc.replace("www.", "")
-        except:
+        except Exception:
             return "unknown"
 
     @abstractmethod

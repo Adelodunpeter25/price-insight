@@ -1,0 +1,1 @@
+"""E-commerce deal tracking functionality."""

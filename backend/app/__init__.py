@@ -1,0 +1,1 @@
+"""Price Insight application package."""

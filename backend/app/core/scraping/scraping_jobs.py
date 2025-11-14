@@ -84,7 +84,7 @@ class ScrapingJobScheduler:
             name="Comprehensive Daily Scrape",
         )
 
-    async def _scrape_ecommerce_job(self):
+    async def _scrape_ecommerce_job(self) -> None:
         """Scheduled job for e-commerce scraping."""
         logger.info("Starting scheduled e-commerce scraping")
         try:
@@ -96,7 +96,7 @@ class ScrapingJobScheduler:
         finally:
             db.close()
 
-    async def _scrape_travel_job(self):
+    async def _scrape_travel_job(self) -> None:
         """Scheduled job for travel scraping and deal detection."""
         logger.info("Starting scheduled travel scraping")
         try:
@@ -119,7 +119,7 @@ class ScrapingJobScheduler:
         finally:
             db.close()
 
-    async def _scrape_real_estate_job(self):
+    async def _scrape_real_estate_job(self) -> None:
         """Scheduled job for real estate scraping."""
         logger.info("Starting scheduled real estate scraping")
         try:
@@ -131,7 +131,7 @@ class ScrapingJobScheduler:
         finally:
             db.close()
 
-    async def _scrape_utilities_job(self):
+    async def _scrape_utilities_job(self) -> None:
         """Scheduled job for utilities scraping."""
         logger.info("Starting scheduled utilities scraping")
         try:
@@ -143,7 +143,7 @@ class ScrapingJobScheduler:
         finally:
             db.close()
 
-    async def _comprehensive_scrape_job(self):
+    async def _comprehensive_scrape_job(self) -> None:
         """Comprehensive daily scraping job."""
         logger.info("Starting comprehensive daily scraping")
         try:
