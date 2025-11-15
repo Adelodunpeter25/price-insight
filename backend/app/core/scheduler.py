@@ -29,9 +29,44 @@ class SchedulerManager:
     async def start(self) -> None:
         """Start the scheduler."""
         if not self._is_running:
+            self._register_jobs()
             self.scheduler.start()
             self._is_running = True
             logger.info("Scheduler started successfully")
+
+    def _register_jobs(self) -> None:
+        """Register all scheduled jobs."""
+        from app.real_estate.jobs.property_scrape_job import (
+            check_property_watchlist_alerts,
+            detect_property_deals,
+            scrape_tracked_properties,
+        )
+
+        self.scheduler.add_job(
+            scrape_tracked_properties,
+            "interval",
+            hours=6,
+            id="scrape_real_estate",
+            replace_existing=True,
+        )
+
+        self.scheduler.add_job(
+            detect_property_deals,
+            "interval",
+            hours=1,
+            id="detect_property_deals",
+            replace_existing=True,
+        )
+
+        self.scheduler.add_job(
+            check_property_watchlist_alerts,
+            "interval",
+            minutes=30,
+            id="check_property_watchlist_alerts",
+            replace_existing=True,
+        )
+
+        logger.info("Registered real estate scheduled jobs")
 
     async def shutdown(self) -> None:
         """Shutdown the scheduler gracefully."""

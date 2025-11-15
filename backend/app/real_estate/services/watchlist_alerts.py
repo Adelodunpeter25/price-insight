@@ -5,6 +5,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+from app.core.services.email_service import email_service
 from app.core.services.notification_service import NotificationService
 from app.real_estate.models.price_history import PropertyPriceHistory
 from app.real_estate.models.watchlist import PropertyWatchlist
@@ -92,6 +93,14 @@ class PropertyWatchlistAlerts:
             },
         )
 
+        await email_service.send_price_alert(
+            to=watchlist.user.email,
+            product_name=watchlist.property.name,
+            old_price=float(watchlist.target_price),
+            new_price=current_price,
+            currency="₦",
+        )
+
     @staticmethod
     async def _send_price_drop_alert(
         db: Session,
@@ -114,4 +123,12 @@ class PropertyWatchlistAlerts:
                 "new_price": current_price,
                 "drop_percent": drop_percent,
             },
+        )
+
+        await email_service.send_price_alert(
+            to=watchlist.user.email,
+            product_name=watchlist.property.name,
+            old_price=previous_price,
+            new_price=current_price,
+            currency="₦",
         )
