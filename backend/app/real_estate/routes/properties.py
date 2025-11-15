@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_cache
 from app.core.deps import get_current_user, get_database_session
 from app.core.models.user import User
 from app.real_estate.models import Property
@@ -44,6 +45,8 @@ async def create_property(
             size_sqm=property_data.size_sqm,
             features=property_data.features,
         )
+        invalidate_cache("property_analytics")
+        invalidate_cache("property_dashboard")
         return PropertyResponse.model_validate(property_obj)
 
     except Exception as e:
@@ -128,6 +131,9 @@ async def update_property(
 
     await db.commit()
     await db.refresh(property_obj)
+    
+    invalidate_cache("property_analytics")
+    invalidate_cache("property_price")
 
     return PropertyResponse.model_validate(property_obj)
 
@@ -152,5 +158,8 @@ async def delete_property(
     property_obj.is_tracked = False
 
     await db.commit()
+    
+    invalidate_cache("property_analytics")
+    invalidate_cache("property_dashboard")
 
     return None
