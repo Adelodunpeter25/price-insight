@@ -1,14 +1,18 @@
 """Property scraping job for real estate price tracking."""
 
+import asyncio
 import logging
 from typing import Dict, List
 
-logger = logging.getLogger(__name__)
+from sqlalchemy import select
 
 from app.core.database import AsyncSessionLocal
-from app.real_estate.models import Property
-from app.real_estate.services.property_service import PropertyService
-from app.real_estate.services.scrapers.property_scraper import PropertyScraper
+from app.core.scraping.scraper_manager import scraper_manager
+from app.real_estate.models.property import Property
+from app.real_estate.services.deal_detector import RealEstateDealDetector
+from app.real_estate.services.watchlist_alerts import PropertyWatchlistAlerts
+
+logger = logging.getLogger(__name__)
 
 
 async def scrape_tracked_properties():
@@ -17,64 +21,50 @@ async def scrape_tracked_properties():
 
     async with AsyncSessionLocal() as db:
         try:
-            property_service = PropertyService(db)
-            properties = await property_service.get_properties_to_track()
+            result = await db.execute(
+                select(Property).where(Property.is_active == True, Property.is_tracked == 1)
+            )
+            properties = result.scalars().all()
 
             if not properties:
                 logger.info("No properties to track")
                 return
 
             logger.info(f"Found {len(properties)} properties to scrape")
-
-            # Group properties by site for efficient scraping
-            properties_by_site = _group_properties_by_site(properties)
-
-            total_scraped = 0
-            total_price_updates = 0
-
-            for site, site_properties in properties_by_site.items():
-                logger.info(f"Scraping {len(site_properties)} properties from {site}")
-
-                # Use generic property scraper for all sites
-                scraper = PropertyScraper()
-
-                async with scraper:
-                    for property_obj in site_properties:
-                        try:
-                            # Scrape property data
-                            data = await scraper.scrape(property_obj.url)
-
-                            if data and "price" in data:
-                                # Update price history
-                                await property_service.add_price_history(
-                                    property_obj.id,
-                                    data["price"],
-                                    data.get("currency", "NGN"),
-                                    data.get("price_per_sqm"),
-                                    data.get("listing_status"),
-                                )
-
-                                total_price_updates += 1
-                                logger.info(
-                                    f"Updated price for {property_obj.name}: ₦{data['price']}"
-                                )
-
-                                total_scraped += 1
-
-                            else:
-                                logger.warning(f"Failed to scrape data for {property_obj.name}")
-
-                        except Exception as e:
-                            logger.error(f"Error scraping property {property_obj.id}: {e}")
-                            continue
-
-            logger.info(
-                f"Property scraping job completed: {total_scraped} properties scraped, "
-                f"{total_price_updates} price updates"
-            )
+            updated_count = await scraper_manager.scrape_real_estate_properties(db)
+            logger.info(f"Property scraping completed: {updated_count} properties updated")
 
         except Exception as e:
             logger.error(f"Property scraping job failed: {e}")
+            raise
+
+
+async def detect_property_deals():
+    """Detect property deals based on price history."""
+    logger.info("Starting property deal detection")
+
+    async with AsyncSessionLocal() as db:
+        try:
+            detector = RealEstateDealDetector()
+            deals = detector.detect_deals(db)
+            logger.info(f"Property deal detection completed: {len(deals)} deals found")
+
+        except Exception as e:
+            logger.error(f"Property deal detection failed: {e}")
+            raise
+
+
+async def check_property_watchlist_alerts():
+    """Check watchlist items and send alerts."""
+    logger.info("Starting property watchlist alert check")
+
+    async with AsyncSessionLocal() as db:
+        try:
+            alerts_sent = await PropertyWatchlistAlerts.check_watchlist_alerts(db)
+            logger.info(f"Property watchlist alerts completed: {alerts_sent} alerts sent")
+
+        except Exception as e:
+            logger.error(f"Property watchlist alert check failed: {e}")
             raise
 
 
