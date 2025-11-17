@@ -20,8 +20,8 @@ class TravelPriceHistory(BaseModel):
     source: Mapped[str] = mapped_column(String(100), default="scraper")
 
     # Relationships
-    flight = relationship("Flight", backref="price_history")
-    hotel = relationship("Hotel", backref="price_history")
+    flight = relationship("Flight", back_populates="price_history")
+    hotel = relationship("Hotel", back_populates="price_history")
 
     def __repr__(self) -> str:
         """String representation."""

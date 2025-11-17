@@ -29,8 +29,12 @@ from app.real_estate.routes import alerts_router
 from app.real_estate.routes import deals_router as re_deals_router
 from app.real_estate.routes import properties_router
 from app.real_estate.routes.export import router as real_estate_export_router
+from app.travel.routes.analytics import router as travel_analytics_router
 from app.travel.routes.export import router as travel_export_router
+from app.travel.routes.price_analytics import router as travel_price_analytics_router
 from app.travel.routes.travel import router as travel_router
+from app.travel.routes.travel_search import router as travel_search_router
+from app.travel.routes.watchlist import router as travel_watchlist_router
 from app.utilities.routes import alerts_router as util_alerts_router
 from app.utilities.routes import deals_router as util_deals_router
 from app.utilities.routes import (
@@ -87,6 +91,10 @@ app.include_router(price_analytics_router)
 app.include_router(watchlist_router)
 app.include_router(analytics_router)
 app.include_router(travel_router)
+app.include_router(travel_price_analytics_router)
+app.include_router(travel_watchlist_router)
+app.include_router(travel_search_router)
+app.include_router(travel_analytics_router)
 app.include_router(properties_router)
 app.include_router(re_deals_router)
 app.include_router(alerts_router)
