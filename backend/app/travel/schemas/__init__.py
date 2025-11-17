@@ -2,18 +2,22 @@
 
 from .travel import (
     FlightCreate,
-    FlightListResponse,
     FlightResponse,
     HotelCreate,
-    HotelListResponse,
     HotelResponse,
+    TravelWatchlistCreate,
+    TravelWatchlistResponse,
+    TravelDealResponse,
+    TravelPriceHistoryResponse,
 )
 
 __all__ = [
     "FlightCreate",
     "FlightResponse",
-    "FlightListResponse",
     "HotelCreate",
     "HotelResponse",
-    "HotelListResponse",
+    "TravelWatchlistCreate",
+    "TravelWatchlistResponse",
+    "TravelDealResponse",
+    "TravelPriceHistoryResponse",
 ]

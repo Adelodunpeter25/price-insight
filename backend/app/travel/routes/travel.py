@@ -10,18 +10,19 @@ from app.core.deps import get_current_user, get_database_session
 from app.core.models.user import User
 from app.travel.models import Flight, Hotel
 from app.travel.models.travel_alert import TravelAlertRule
+from app.travel.schemas.alert import TravelAlertRuleCreate, TravelAlertRuleResponse
 from app.travel.schemas.travel import (
     FlightCreate,
-    FlightListResponse,
     FlightResponse,
     HotelCreate,
-    HotelListResponse,
     HotelResponse,
-    TravelAlertListResponse,
-    TravelAlertRuleCreate,
-    TravelAlertRuleResponse,
-    TravelDealListResponse,
     TravelDealResponse,
+)
+from app.travel.schemas.travel_list import (
+    FlightListResponse,
+    HotelListResponse,
+    TravelAlertListResponse,
+    TravelDealListResponse,
 )
 from app.travel.services.deal_service import TravelDealService
 from app.travel.services.travel_service import TravelService

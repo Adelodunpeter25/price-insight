@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 from app.core.scheduler import scheduler_manager
 from app.ecommerce.jobs.scrape_job import scrape_tracked_products
 from app.real_estate.jobs.property_scrape_job import scrape_tracked_properties
-from app.travel.jobs.travel_scrape_job import scrape_travel_prices
+from app.travel.jobs.travel_scrape_job import scrape_tracked_travel_items
 from app.utilities.jobs.utility_scrape_job import scrape_tracked_utilities
 
 
@@ -45,7 +45,7 @@ class JobManager:
 
         # Travel scraping job - every 4 hours
         travel_job = scheduler_manager.add_job(
-            func=scrape_travel_prices,
+            func=scrape_tracked_travel_items,
             trigger=IntervalTrigger(hours=4),
             id="scrape_travel",
             name="Scrape Travel Prices",
